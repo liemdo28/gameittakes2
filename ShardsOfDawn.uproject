@@ -2,12 +2,22 @@
   "FileVersion": 3,
   "EngineAssociation": "5.4",
   "Category": "Games",
-  "Description": "Shards of Dawn - Co-op prototype project",
+  "Description": "Shards of Dawn - A premium co-op action-adventure game featuring Light/Shadow dual-state mechanics.",
   "Modules": [
     {
       "Name": "ShardsOfDawn",
       "Type": "Runtime",
-      "LoadingPhase": "Default"
+      "LoadingPhase": "Default",
+      "AdditionalDependencies": [
+        "Engine",
+        "GameplayAbilities",
+        "EnhancedInput"
+      ]
+    },
+    {
+      "Name": "ShardsOfDawnEditor",
+      "Type": "Editor",
+      "LoadingPhase": "PostEngineInit"
     }
   ],
   "Plugins": [
@@ -30,6 +40,27 @@
     {
       "Name": "Niagara",
       "Enabled": true
+    },
+    {
+      "Name": "OnlineSubsystem",
+      "Enabled": true
+    },
+    {
+      "Name": "OnlineSubsystemUtils",
+      "Enabled": true
+    },
+    {
+      "Name": "OnlineSubsystemNull",
+      "Enabled": true
+    },
+    {
+      "Name": "CommonUI",
+      "Enabled": true
     }
+  ],
+  "TargetPlatforms": [
+    "Windows",
+    "PS5",
+    "XSX"
   ]
 }

@@ -15,13 +15,26 @@ public class ShardsOfDawn : ModuleRules
             "EnhancedInput",
             "GameplayAbilities",
             "GameplayTags",
-            "GameplayTasks"
+            "GameplayTasks",
+            "UMG",
+            "Slate",
+            "SlateCore",
+            "OnlineSubsystem",
+            "OnlineSubsystemUtils"
         });
 
         PrivateDependencyModuleNames.AddRange(new string[]
         {
             "Niagara",
-            "PhysicsCore"
+            "PhysicsCore",
+            "NetCore",
+            "NavigationSystem",
+            "AIModule"
+        });
+
+        PublicIncludePaths.AddRange(new string[]
+        {
+            "ShardsOfDawn"
         });
     }
 }

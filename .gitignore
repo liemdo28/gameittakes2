@@ -21,14 +21,6 @@ Build/
 Thumbs.db
 Desktop.ini
 
-# Generated files
-*.generated.h
-
-# Asset cache
-Content/**/*.uasset
-Content/**/*.umap
-!Content/.gitkeep
-
 # Compiled shaders
 *.ushaderbytecode
 

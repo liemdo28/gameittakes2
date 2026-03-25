@@ -1,6 +1,6 @@
 // Copyright Shards of Dawn. All Rights Reserved.
 
-#include "Puzzle/SODPuzzleDoor.h"
+#include "Actors/PuzzleActors/SODPuzzleDoor.h"
 #include "Components/StaticMeshComponent.h"
 
 ASODPuzzleDoor::ASODPuzzleDoor()
