@@ -1,0 +1,61 @@
+Folder PATH listing for volume File
+Volume serial number is 503C-8D80
+E:.
+¦   README.md
+¦   structure.txt
+¦   
++---art
+¦       ART_DIRECTION.md
+¦       
++---audio
+¦       AUDIO_DIRECTION.md
+¦       
++---backlog
+¦       JIRA_EPICS_AND_FEATURES.md
+¦       JIRA_IMPORT_TEMPLATE.csv
+¦       JIRA_Q1_Q2_240_STORIES.csv
+¦       JIRA_USER_STORIES.md
+¦       
++---docs
+¦       PROJECT_OVERVIEW.md
+¦       
++---game-design
+¦       GAMEPLAY_SYSTEMS.md
+¦       GAME_PILLARS.md
+¦       STORY_SCRIPT.md
+¦       
++---pitch
+¦       FINANCIAL_MODEL_OVERVIEW.md
+¦       GO_TO_MARKET_STRATEGY.md
+¦       INVESTOR_PUBLISHER_PITCH_DECK.md
+¦       
++---production
+¦   ¦   CONTENT_BENCHMARK_TARGETS.md
+¦   ¦   EXECUTIVE_DASHBOARD.md
+¦   ¦   GDD_MASTER.md
+¦   ¦   MASTER_INDEX_AND_DEPENDENCY_MAP.md
+¦   ¦   NARRATIVE_BIBLE.md
+¦   ¦   VERTICAL_SLICE_PRODUCTION_BIBLE.md
+¦   ¦   
+¦   +---templates
+¦           ART_REVIEW_TEMPLATE.md
+¦           DESIGN_REVIEW_TEMPLATE.md
+¦           RISK_GATE_TEMPLATE.md
+¦           TECH_GATE_TEMPLATE.md
+¦           
++---prototype
+¦       co-op-prototype-design.txt
+¦       UE5_BOOTSTRAP_CHECKLIST.md
+¦       
++---roadmap
+¦       AAA_EXECUTION_ROADMAP.md
+¦       KPI_AND_QA_STRATEGY.md
+¦       SPRINT_1_EXECUTION_BOARD_WEEK1_WEEK2.md
+¦       SPRINT_2_EXECUTION_BOARD_WEEK3_WEEK4.md
+¦       SPRINT_3_EXECUTION_BOARD_WEEK5_WEEK6.md
+¦       TEAM_AND_PRODUCTION_PLAN.md
+¦       
++---tech
+        SYSTEM_BLUEPRINTS.md
+        UE5_TECH_ARCHITECTURE.md
+        
