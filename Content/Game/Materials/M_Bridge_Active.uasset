@@ -1,0 +1,16 @@
+// Copyright Shards of Dawn Team 2026
+// Material: M_Bridge_Active
+// Location: /Game/Game/Materials/M_Bridge_Active
+
+/*
+Material Properties:
+- Base Color: FLinearColor(0.6, 0.5, 1.0) — ethereal purple-white
+- Emissive: FLinearColor(0.8, 0.5, 1.0) * 2.0
+- Roughness: 0.2
+- Metallic: 0.7
+
+Used by: ACoopBridgeActor BridgeMesh when fully lowered (all shards active)
+*/
+
+FSoftObjectPath M_Bridge_Active_Path =
+    FSoftObjectPath("/Game/Game/Materials/M_Bridge_Active.M_Bridge_Active");

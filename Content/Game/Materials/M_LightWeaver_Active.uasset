@@ -1,0 +1,32 @@
+// Copyright Shards of Dawn Team 2026
+// Material: M_LightWeaver_Active
+// Shader: Custom HLSL or Material Function (golden energy glow)
+// Location: /Game/Game/Materials/M_LightWeaver_Active
+
+/*
+Material Properties (set in UE5 Editor):
+──────────────────────────────────────────
+Domain: Surface
+Material Type: Opaque / Translucent (your choice)
+
+PARAMETERS:
+- Base Color: FLinearColor(1.0, 0.85, 0.4)  [warm gold]
+- Emissive Color: FLinearColor(1.0, 0.7, 0.2) * Intensity
+- Emissive Boost: 3.0
+- Roughness: 0.15
+- Metallic: 0.8
+- Normal Map: T_LightShard_Normal (crystal facet pattern)
+- Opacity Mask: 1.0 (opaque) or 0.9 (translucent)
+
+FURTHER ENHANCEMENT:
+- Use animated fresnel for rim glow
+- Pulse emissive via Blueprint ScalarParameter "GlowIntensity"
+- Crystalline normal map (faceted low-poly feel)
+
+USAGE:
+- Applied to BP_LightWeaver SkeletalMesh when archetype active
+- Applied to BP_LightShard MeshComp when RepIsActivated=true
+*/
+
+FSoftObjectPath M_LightWeaver_Active_Path =
+    FSoftObjectPath("/Game/Game/Materials/M_LightWeaver_Active.M_LightWeaver_Active");

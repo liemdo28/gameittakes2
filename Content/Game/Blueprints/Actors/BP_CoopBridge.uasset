@@ -1,0 +1,22 @@
+// Copyright Shards of Dawn Team 2026
+// BP_CoopBridge — Blueprint subclass of ACoopBridgeActor
+// Location: /Game/Game/Blueprints/Actors/BP_CoopBridge
+
+/*
+To create in UE5 Editor:
+1. Create new Blueprint extending ACoopBridgeActor
+2. Set default properties:
+   - RequiredActivationCount = 6
+   - MonitoredShardIDs = [Shard_01_Light, Shard_02_Light, Shard_03_Light,
+                          Shard_01_Shadow, Shard_02_Shadow, Shard_03_Shadow]
+   - ActivationDelay = 1.5
+   - LockedMaterial = M_Bridge_Locked
+   - PartiallyActiveMaterial = M_Bridge_Locked (or partial glow variant)
+   - FullyActiveMaterial = M_Bridge_Active
+   - LowerSound = S_Bridge_Lower_Cue
+   - RaiseSound = S_Bridge_Raise_Cue
+   - ActivationTickSound = S_Shard_Tick_Cue
+3. Place 1x instance in PrototypeRoom at (0, 900, 0)
+   Bridge spans gap between Hall B and Exit Platform
+4. Connect Shard IDs in Level Blueprint or via component tags
+*/

@@ -1,0 +1,16 @@
+// Copyright Shards of Dawn Team 2026
+// Material: M_Bridge_Locked
+// Location: /Game/Game/Materials/M_Bridge_Locked
+
+/*
+Material Properties:
+- Base Color: FLinearColor(0.2, 0.2, 0.2) — dark stone
+- Emissive: None (dim, inactive)
+- Roughness: 0.8
+- Metallic: 0.1
+
+Used by: ACoopBridgeActor BridgeMesh when ActivationProgress < 1.0
+*/
+
+FSoftObjectPath M_Bridge_Locked_Path =
+    FSoftObjectPath("/Game/Game/Materials/M_Bridge_Locked.M_Bridge_Locked");

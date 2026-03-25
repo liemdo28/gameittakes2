@@ -1,0 +1,33 @@
+// Copyright Shards of Dawn Team 2026
+// Material: M_ShadowWalker_Active
+// Shader: Custom HLSL or Material Function (void violet glow)
+// Location: /Game/Game/Materials/M_ShadowWalker_Active
+
+/*
+Material Properties (set in UE5 Editor):
+──────────────────────────────────────────
+Domain: Surface
+Material Type: Translucent (recommended for void aesthetic)
+
+PARAMETERS:
+- Base Color: FLinearColor(0.15, 0.05, 0.3)  [deep violet]
+- Emissive Color: FLinearColor(0.4, 0.0, 0.8) * Intensity
+- Emissive Boost: 4.0
+- Roughness: 0.05
+- Metallic: 0.9
+- Normal Map: T_ShadowShard_Normal (void distortion pattern)
+- Opacity: 0.85
+
+FURTHER ENHANCEMENT:
+- Animated UV offset for "flowing void" effect
+- Fresnel rim in violet/magenta
+- Subsurface scattering approximation via emissive bleed
+- Pulse emissive via Blueprint ScalarParameter "VoidIntensity"
+
+USAGE:
+- Applied to BP_ShadowWalker SkeletalMesh when archetype active
+- Applied to BP_ShadowShard MeshComp when RepIsActivated=true
+*/
+
+FSoftObjectPath M_ShadowWalker_Active_Path =
+    FSoftObjectPath("/Game/Game/Materials/M_ShadowWalker_Active.M_ShadowWalker_Active");
