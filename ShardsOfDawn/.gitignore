@@ -1,0 +1,39 @@
+# UE5 Build artifacts
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+Build/
+
+# IDE files
+.vs/
+.vscode/
+.idea/
+*.sln
+*.suo
+*.opensdf
+*.sdf
+*.VC.db
+*.VC.opendb
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Generated files
+*.generated.h
+
+# Asset cache
+Content/**/*.uasset
+Content/**/*.umap
+!Content/.gitkeep
+
+# Compiled shaders
+*.ushaderbytecode
+
+# Crash reports
+CrashReportClient/
+
+# Local user settings
+*.DotSettings.user
