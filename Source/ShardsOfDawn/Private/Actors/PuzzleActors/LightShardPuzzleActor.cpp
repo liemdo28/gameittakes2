@@ -1,0 +1,66 @@
+// Copyright Shards of Dawn Team 2026
+
+#include "Actors/PuzzleActors/LightShardPuzzleActor.h"
+#include "Characters/SodPlayerCharacter.h"
+#include "Components/LightComponent.h"
+#include "Components/PointLightComponent.h"
+
+ALightShardPuzzleActor::ALightShardPuzzleActor()
+{
+    RequiredArchetype = EPlayerArchetype::LightWeaver;
+    PuzzleName = FText::FromString(TEXT("Light Shard"));
+
+    // Slightly slower rotation for Light shard
+    if (RotateComp)
+    {
+        RotateComp->RotationRate = FRotator(0.0f, 45.0f, 0.0f);
+    }
+}
+
+void ALightShardPuzzleActor::BeginPlay()
+{
+    Super::BeginPlay();
+    InitialZ = GetActorLocation().Z;
+
+    // Add point light
+    PointLight = NewObject<UPointLightComponent>(this, TEXT("PointLight"));
+    PointLight->SetupAttachment(RootComponent);
+    PointLight->SetLightColor(LightColor);
+    PointLight->SetIntensity(LightIntensity);
+    PointLight->SetSourceRadius(30.0f);
+    PointLight->SetFalloffExponent(2.0f);
+    PointLight->SetSourceLength(0.0f);
+    PointLight->bAutoActivate = false;
+    PointLight->RegisterComponent();
+}
+
+bool ALightShardPuzzleActor::CanInteract_Implementation(ASodPlayerCharacter* Interactor) const
+{
+    // Only Light Weaver can interact
+    return Interactor && Interactor->Archetype == EPlayerArchetype::LightWeaver;
+}
+
+void ALightShardPuzzleActor::OnInteract_Implementation(ASodPlayerCharacter* Interactor)
+{
+    if (!CanInteract_Implementation(Interactor))
+    {
+        BP_OnInteractionFailed(Interactor,
+            FText::FromString(TEXT("Only Light Weaver can activate this shard.")));
+        return;
+    }
+    Super::OnInteract_Implementation(Interactor);
+}
+
+void ALightShardPuzzleActor::Tick(float DeltaSeconds)
+{
+    Super::Tick(DeltaSeconds);
+
+    // Floating animation when active
+    if (bIsActivated)
+    {
+        TimeAccum += DeltaSeconds;
+        FVector Pos = GetActorLocation();
+        Pos.Z = InitialZ + FMath::Sin(TimeAccum * FloatSpeed) * FloatAmplitude;
+        SetActorLocation(Pos, true);
+    }
+}

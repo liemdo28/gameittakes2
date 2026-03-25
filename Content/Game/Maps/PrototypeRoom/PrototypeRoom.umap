@@ -1,0 +1,51 @@
+// Copyright Shards of Dawn Team 2026
+// PrototypeRoom.umap — Entry map for Shards of Dawn co-op prototype
+// Location: /Game/Game/Maps/PrototypeRoom/PrototypeRoom.umap
+// Game Mode: BP_SodGameMode (set in DefaultEngine.ini)
+// Players: 2 (split-screen / LAN)
+
+// ── Map Layout (to build in UE5 Editor) ────────────────────────────────────
+
+/*
+LEVEL: PrototypeRoom
+
+WORLD OUTLINE:
+├── Start Platform        (Z=0)  — two PlayerStart actors (tagged Light/Shadow)
+│   ├── Light Start → BP_LightWeaver spawn
+│   └── Shadow Start → BP_ShadowWalker spawn
+├── Tutorial Corridor     (Z=0)  — narrow path with wall prompts
+│   └── ArchetypeSign_Light/Shadow
+├── Puzzle Hall A         (Z=0)  — 3x LightShard (ALightShardPuzzleActor)
+│   └── Shard_01, Shard_02, Shard_03
+├── Puzzle Hall B         (Z=0)  — 3x ShadowShard (AShadowShardPuzzleActor)
+│   └── Shard_04, Shard_05, Shard_06
+├── Co-op Bridge           — requires BOTH shards activated to lower
+├── Final Platform        (Z=+200) — Exit trigger
+└── Lighting:
+    - DynamicLightSource_01 (Stationary PointLight, warm)
+    - DynamicLightSource_02 (Stationary PointLight, cool)
+    - Sky Atmosphere (HDRI backed)
+
+INTERACTION TRACE CHANNEL:
+- ECC_GameTraceChannel1 = "Interaction" (set in DefaultEngine.ini Collision Settings)
+
+REFERENCED ASSETS:
+- /Game/Game/Blueprints/Player/BP_LightWeaver
+- /Game/Game/Blueprints/Player/BP_ShadowWalker
+- /Game/Game/Blueprints/Actors/BP_LightShard
+- /Game/Game/Blueprints/Actors/BP_ShadowShard
+- /Game/Game/Input/IMC_ShardsOfDawn_LightWeaver
+- /Game/Game/Input/IMC_ShardsOfDawn_ShadowWalker
+
+SMOKE TEST CHECKLIST:
+☐ P1 spawns at Light start
+☐ P2 spawns at Shadow start
+☐ Both players move independently
+☐ Light Weaver activates Light Shard (visual + sound)
+☐ Shadow Walker activates Shadow Shard (visual + sound)
+☐ Both shards active → Co-op bridge lowers
+☐ Both players reach exit platform
+☐ No crash in 15 min
+*/
+
+FString PrototypeRoom_MapGuid = TEXT("A1B2C3D4-E5F6-7890-ABCD-EF1234567890");

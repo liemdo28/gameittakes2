@@ -1,0 +1,20 @@
+// Copyright Shards of Dawn Team 2026
+// BP_SodGameMode — Blueprint subclass of ASodGameMode
+// Location: /Game/Game/GameModes/BP_SodGameMode
+
+/*
+To create in UE5 Editor:
+1. Create new Blueprint extending ASodGameMode
+2. Set default properties:
+   - LightWeaverClass = BP_LightWeaver
+   - ShadowWalkerClass = BP_ShadowWalker
+   - LightWeaverStartTag = "PlayerStart.Light"
+   - ShadowWalkerStartTag = "PlayerStart.Shadow"
+   - PlayerControllerClass = BP_SodPlayerController
+3. Override Blueprint events:
+   - Event OnPlayerJoined → Play spawn sound + show archetype notification
+   - Event OnPlayerLeft → Log event
+   - Event RestartRound → Reset all puzzle actors
+4. Set as GameMode in DefaultEngine.ini:
+   GlobalDefaultGameMode=/Game/Game/GameModes/BP_SodGameMode.BP_SodGameMode_C
+*/

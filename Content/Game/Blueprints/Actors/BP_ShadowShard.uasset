@@ -1,0 +1,22 @@
+// Copyright Shards of Dawn Team 2026
+// BP_ShadowShard — Blueprint subclass of AShadowShardPuzzleActor
+// Location: /Game/Game/Blueprints/Actors/BP_ShadowShard
+
+/*
+To create in UE5 Editor:
+1. Create new Blueprint class extending AShadowShardPuzzleActor
+2. Set default properties:
+   - PuzzleName = "Shadow Shard Alpha"
+   - RequiredArchetype = ShadowWalker
+   - LightIntensity = 3000
+   - LightRadius = 600
+   - LightColor = FLinearColor(0.3, 0.1, 0.6) (violet)
+   - ActiveMaterial = M_ShadowShard_Active (void violet glow)
+   - InactiveMaterial = M_ShadowShard_Inactive (dim)
+   - ActivationSound = S_ShadowShard_Activate_Cue
+   - MeshComp → StaticMesh = SM_Shard_Crystal
+3. Place 3x instances in PrototypeRoom at:
+   - (400, 0, 100)
+   - (200, -300, 100)
+   - (0, -600, 100)
+*/

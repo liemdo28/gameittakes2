@@ -1,0 +1,22 @@
+// Copyright Shards of Dawn Team 2026
+// BP_LightShard — Blueprint subclass of ALightShardPuzzleActor
+// Location: /Game/Game/Blueprints/Actors/BP_LightShard
+
+/*
+To create in UE5 Editor:
+1. Create new Blueprint class extending ALightShardPuzzleActor
+2. Set default properties:
+   - PuzzleName = "Light Shard Alpha"
+   - RequiredArchetype = LightWeaver
+   - LightIntensity = 5000
+   - LightRadius = 800
+   - LightColor = FLinearColor(1.0, 0.85, 0.4)
+   - ActiveMaterial = M_LightShard_Active (golden glow)
+   - InactiveMaterial = M_LightShard_Inactive (dim)
+   - ActivationSound = S_LightShard_Activate_Cue
+   - MeshComp → StaticMesh = SM_Shard_Crystal
+3. Place 3x instances in PrototypeRoom at:
+   - (-400, 0, 100)
+   - (-200, 300, 100)
+   - (0, 600, 100)
+*/

@@ -18,6 +18,10 @@ public class ShardsOfDawn : ModuleRules
             "GameplayTasks"
         });
 
-        PrivateDependencyModuleNames.AddRange(new string[] { });
+        PrivateDependencyModuleNames.AddRange(new string[]
+        {
+            "Niagara",
+            "PhysicsCore"
+        });
     }
 }

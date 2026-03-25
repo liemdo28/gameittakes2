@@ -19,9 +19,16 @@
 - Play-in-editor launches successfully
 
 ## 5) Next Immediate Steps
-- Create `PrototypeRoom` map asset at `/Game/Maps/PrototypeRoom`
-- Create 2 player archetype blueprints
-- Implement first interaction + puzzle actor
+- [x] ✅ C++ PlayerCharacter (`ASodPlayerCharacter`) — archetype enum, interaction trace, replicated
+- [x] ✅ C++ PuzzleActors (`SodPuzzleActorBase` + `LightShard` + `ShadowShard`)
+- [x] ✅ C++ GameMode (`ASodGameMode`) + PlayerController + GameInstance
+- [x] ✅ Input Mapping Context stubs + Blueprint stubs (Light/Shadow archetypes)
+- [x] ✅ PrototypeRoom map layout doc
+- [ ] Import character meshes + set ArchetypeMaterial
+- [ ] Create actual `.uasset` for `BP_LightWeaver`, `BP_ShadowWalker`, `BP_SodGameMode`
+- [ ] Place 6x shard actors in PrototypeRoom (3x Light, 3x Shadow)
+- [ ] Create co-op bridge actor (requires all shards activated)
+- [ ] PIE smoke validation 10–15 min
 
 ## 6) Smoke Validation
 - Launch PIE for 10–15 min

@@ -1,0 +1,16 @@
+// Copyright Shards of Dawn Team 2026
+// BP_SodPlayerController — Blueprint subclass of ASodPlayerController
+// Location: /Game/Game/Blueprints/Player/BP_SodPlayerController
+
+/*
+To create in UE5 Editor:
+1. Create new Blueprint extending ASodPlayerController
+2. Set default properties:
+   - LightWeaver_IMC = IMC_ShardsOfDawn_LightWeaver
+   - ShadowWalker_IMC = IMC_ShardsOfDawn_ShadowWalker
+   - HUDClass = BP_SodHUD
+3. Implement Blueprint events:
+   - ShowInteractionPrompt → Create Widget showing E key + text
+   - HideInteractionPrompt → Remove Widget
+   - ShowArchetypeNotification → Play archetype intro UI
+*/
