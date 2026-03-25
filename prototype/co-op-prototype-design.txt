@@ -1,0 +1,62 @@
+SHARDS OF DAWN — CO-OP PROTOTYPE (Vertical Slice Technical Skeleton)
+
+1) ENGINE TARGET
+- Unreal Engine 5.4+
+- Online Subsystem: Steam/EOS
+- Split-screen + online co-op
+
+2) CORE MODULES
+- Module_Player
+  + BP_Player_Light (Linh)
+  + BP_Player_Shadow (Nam)
+- Module_Abilities
+  + GA_LightPulse
+  + GA_ShadowAnchor
+  + GA_BeamLink
+  + GA_VeilStep
+- Module_Puzzle
+  + BP_DualStateDoor
+  + BP_LightPrism
+  + BP_ShadowRelay
+- Module_Combat
+  + BP_Enemy_DualShield
+  + BP_Boss_Ferryman
+- Module_Camera
+  + BP_DynamicSplitScreenManager
+- Module_Audio
+  + Wwise/FMOD events map by chapter
+- Module_UI
+  + WBP_CoopPingWheel
+  + WBP_DualCooldownHUD
+
+3) NETWORK RULES
+- Server authoritative for puzzle state and enemy state.
+- Ability activation predicted client-side with server reconciliation.
+- Shared checkpoints replicated instantly.
+
+4) SAMPLE EVENT FLOW (Puzzle)
+- Linh cast LightPulse -> reveal hidden rune for 4s.
+- Nam cast ShadowAnchor on rune -> freeze rune state 8s.
+- Door checks both bools true -> open.
+
+5) ART PIPELINE
+- Greybox -> Lighting pass -> Material pass -> VFX pass -> Polish.
+- Style: Stylized realism, high contrast warm-vs-cool palette.
+
+6) AUDIO PIPELINE
+- Layered adaptive music by co-op sync score.
+- If players desync -> add tension layer.
+- If players chain success -> bloom orchestra layer.
+
+7) MILESTONES (8 weeks)
+- W1-W2: movement + ability prototypes
+- W3-W4: first chapter blockout + 10 puzzles
+- W5-W6: boss prototype + cinematic hooks
+- W7: art/audio polish pass
+- W8: playtest + balancing + bugfix
+
+8) KPIs FOR SLICE
+- 90+ FPS target on mid-range PC
+- Puzzle fail retry < 3 attempts average
+- Session completion rate > 70%
+- Co-op communication frequency >= 8 meaningful pings / 10 min

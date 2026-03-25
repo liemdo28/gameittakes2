@@ -1,0 +1,14 @@
+Issue Type,Issue Key,Summary,Epic Link,Description,Acceptance Criteria,Priority
+Epic,SOD-EP01,Core Co-op Foundation,,Online session, split-screen, ping, checkpoints,"Session create/join/reconnect working",Highest
+Epic,SOD-EP02,Dual Ability System,,Light/Shadow ability families and combo validator,"Deterministic combo behavior with replication",Highest
+Epic,SOD-EP03,Puzzle & Encounter Framework,,Reusable puzzle actors and encounter director,"Reusable and data-driven puzzle framework",High
+Epic,SOD-EP04,Combat AI Bosses,,Dual-shield enemies and boss framework,"Boss phases and co-op finisher stable",High
+Epic,SOD-EP05,Narrative & Cinematics,,Dialogue graph and cinematic integration,"Gameplay-to-cinematic seamless handoff",High
+Epic,SOD-EP06,Art Audio Polish,,Art packs and adaptive audio polish,"Performance and readability targets met",Highest
+Story,SOD-US-001,Fast co-op session start,SOD-EP01,"As a player, I want to host/join quickly",Session starts in under 30s,Highest
+Story,SOD-US-002,Dynamic split-screen readability,SOD-EP01,"As a player, I want adaptive split camera",Merge/separate camera without hard pop,High
+Story,SOD-US-003,Deterministic ability combos,SOD-EP02,"As a player, I want reliable combos",Server-authoritative validation and consistent feedback,Highest
+Story,SOD-US-004,Reusable puzzle actors,SOD-EP03,"As a level designer, I want reusable puzzle actors",Config-driven states + replication hooks,High
+Story,SOD-US-005,Synchronized co-op finishers,SOD-EP04,"As players, we want synced finishers",Prompt and grace window behavior validated,High
+Story,SOD-US-006,Seamless gameplay-cinematic handoff,SOD-EP05,"As a player, I want smooth transitions",Transition under 1.5s and correct audio/subtitles,Medium
+Story,SOD-US-007,Adaptive score by teamwork,SOD-EP06,"As a player, I want music to react",3+ intensity tiers with telemetry,Medium
