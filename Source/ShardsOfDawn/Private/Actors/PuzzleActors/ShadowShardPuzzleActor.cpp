@@ -24,10 +24,12 @@ void AShadowShardPuzzleActor::BeginPlay()
     VoidLight->SetupAttachment(RootComponent);
     VoidLight->SetLightColor(LightColor);
     VoidLight->SetIntensity(LightIntensity);
+    VoidLight->SetAttenuationRadius(LightRadius);
     VoidLight->SetSourceRadius(30.0f);
     VoidLight->SetFalloffExponent(2.0f);
     VoidLight->bAutoActivate = false;
     VoidLight->RegisterComponent();
+    HandleActivationStateChanged(bIsActivated);
 }
 
 bool AShadowShardPuzzleActor::CanInteract_Implementation(ASodPlayerCharacter* Interactor) const
@@ -57,5 +59,16 @@ void AShadowShardPuzzleActor::Tick(float DeltaSeconds)
         // Void pulses downward
         Pos.Z = InitialZ + FMath::Sin(TimeAccum * PulseSpeed) * PulseAmplitude - 10.0f;
         SetActorLocation(Pos, true);
+    }
+}
+
+void AShadowShardPuzzleActor::HandleActivationStateChanged(bool bActivated)
+{
+    Super::HandleActivationStateChanged(bActivated);
+
+    if (VoidLight)
+    {
+        VoidLight->SetVisibility(bActivated);
+        VoidLight->SetActive(bActivated);
     }
 }

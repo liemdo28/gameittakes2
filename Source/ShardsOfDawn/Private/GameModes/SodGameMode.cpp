@@ -1,9 +1,13 @@
 // Copyright Shards of Dawn Team 2026
 
 #include "GameModes/SodGameMode.h"
+#include "Actors/PuzzleActors/SodPuzzleActorBase.h"
 #include "Characters/SodPlayerCharacter.h"
 #include "Controllers/SodPlayerController.h"
+#include "GameFramework/PlayerStart.h"
+#include "Interfaces/Interface_Interactive.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 
 ASodGameMode::ASodGameMode()
 {
@@ -17,16 +21,24 @@ ASodGameMode::ASodGameMode()
 
 void ASodGameMode::PostLogin(APlayerController* NewPlayer)
 {
+    const int32 JoiningPlayerIndex = ActivePlayerCount;
     Super::PostLogin(NewPlayer);
     ActivePlayerCount++;
+    AssignArchetype(JoiningPlayerIndex, Cast<ASodPlayerController>(NewPlayer));
     OnPlayerJoined(NewPlayer);
 }
 
 void ASodGameMode::Logout(AController* OldPlayer)
 {
-    ActivePlayerCount--;
+    ActivePlayerCount = FMath::Max(0, ActivePlayerCount - 1);
     OnPlayerLeft(Cast<APlayerController>(OldPlayer));
     Super::Logout(OldPlayer);
+}
+
+void ASodGameMode::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+    DOREPLIFETIME(ASodGameMode, ActivatedShardIDs);
 }
 
 AActor* ASodGameMode::ChoosePlayerStart_Implementation(AController* Player)
@@ -54,6 +66,14 @@ AActor* ASodGameMode::ChoosePlayerStart_Implementation(AController* Player)
     return !AllStarts.IsEmpty() ? AllStarts[ActivePlayerCount % AllStarts.Num()] : nullptr;
 }
 
+UClass* ASodGameMode::GetDefaultPawnClassForController_Implementation(AController* InController)
+{
+    const bool bSpawnLightWeaver = ActivePlayerCount % 2 == 0;
+    const TSubclassOf<ASodPlayerCharacter> RequestedClass = bSpawnLightWeaver ? LightWeaverClass : ShadowWalkerClass;
+
+    return RequestedClass ? RequestedClass.Get() : Super::GetDefaultPawnClassForController_Implementation(InController);
+}
+
 void ASodGameMode::AssignArchetype(int32 PlayerIndex, ASodPlayerController* PC)
 {
     if (!PC) return;
@@ -66,34 +86,8 @@ void ASodGameMode::AssignArchetype(int32 PlayerIndex, ASodPlayerController* PC)
     {
         if (ASodPlayerCharacter* Char = Cast<ASodPlayerCharacter>(Pawn))
         {
-            Char->Archetype = Archetype;
-            Char->RepArchetype = Archetype;
-            Char->OnRep_ArchetypeChanged();
+            Char->SetArchetype(Archetype);
         }
-    }
-}
-
-void ASodGameMode::Generic_PawnSpawner(APlayerController* NewPlayerController)
-{
-    if (!NewPlayerController) return;
-
-    FActorSpawnParameters SpawnParams;
-    SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-    SpawnParams.Instigator = GetInstigator();
-
-    UClass* PawnClass = (ActivePlayerCount % 2 == 0)
-        ? LightWeaverClass.Get()
-        : ShadowWalkerClass.Get();
-
-    if (!PawnClass) PawnClass = DefaultPawnClass;
-
-    FVector SpawnLoc = FVector(0.0f, 0.0f, 200.0f);
-    FRotator SpawnRot = FRotator(0.0f, 0.0f, 0.0f);
-
-    if (APawn* NewPawn = GetWorld()->SpawnActor<APawn>(PawnClass, SpawnLoc, SpawnRot, SpawnParams))
-    {
-        NewPlayerController->Possess(NewPawn);
-        AssignArchetype(ActivePlayerCount, Cast<ASodPlayerController>(NewPlayerController));
     }
 }
 
@@ -107,11 +101,20 @@ void ASodGameMode::OnPlayerLeft_Implementation(APlayerController* LeftPlayer)
     UE_LOG(LogTemp, Log, TEXT("[SodGameMode] Player left. Active count: %d"), ActivePlayerCount);
 }
 
-void ASodGameMode::RegisterActivatedShard(FName ShardID)
+void ASodGameMode::SetShardActivationState(FName ShardID, bool bActivated)
 {
-    if (!ActivatedShardIDs.Contains(ShardID))
+    if (ShardID.IsNone())
     {
-        ActivatedShardIDs.Add(ShardID);
+        return;
+    }
+
+    if (bActivated)
+    {
+        ActivatedShardIDs.AddUnique(ShardID);
+    }
+    else
+    {
+        ActivatedShardIDs.Remove(ShardID);
     }
 }
 
@@ -120,13 +123,13 @@ void ASodGameMode::ResetAllPuzzles()
     ActivatedShardIDs.Empty();
 
     TArray<AActor*> PuzzleActors;
-    UGameplayStatics::GetAllActorsOfClass(this, AActor::StaticClass(), PuzzleActors);
+    UGameplayStatics::GetAllActorsOfClass(this, ASodPuzzleActorBase::StaticClass(), PuzzleActors);
 
     for (AActor* Actor : PuzzleActors)
     {
-        if (Actor->GetClass()->ImplementsInterface(UInterface_Interactive::StaticClass()))
+        if (ASodPuzzleActorBase* PuzzleActor = Cast<ASodPuzzleActorBase>(Actor))
         {
-            // Reset via interaction if the actor supports it
+            PuzzleActor->ResetPuzzleState();
             UE_LOG(LogTemp, Log, TEXT("[SodGameMode] Reset puzzle actor: %s"), *Actor->GetName());
         }
     }

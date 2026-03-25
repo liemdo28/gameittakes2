@@ -46,11 +46,14 @@ public:
     UFUNCTION(Server, Reliable, Category = "Network")
     void Server_NotifyArchetypeSet(uint8 ArchetypeValue);
 
+    UFUNCTION(BlueprintCallable, Category = "Input")
+    void RefreshInputMapping();
+
 protected:
     void BeginPlay() override;
     void SetupInputComponent() override;
+    void OnPossess(APawn* InPawn) override;
 
 private:
     TObjectPtr<class USodGameInstance> GameInstance;
-    void ApplyInputMappingForArchetype();
 };

@@ -11,7 +11,6 @@ class UInputMappingContext;
 class UInputAction;
 class USpringArmComponent;
 class UCameraComponent;
-class UGroomComponent;
 
 /**
  * Enum representing the two archetypes: Light Weaver and Shadow Walker
@@ -19,8 +18,9 @@ class UGroomComponent;
 UENUM(BlueprintType)
 enum class EPlayerArchetype : uint8
 {
-    LightWeaver   UMETA(DisplayName = "Light Weaver"),
-    ShadowWalker  UMETA(DisplayName = "Shadow Walker")
+    LightWeaver = 0  UMETA(DisplayName = "Light Weaver"),
+    ShadowWalker = 1 UMETA(DisplayName = "Shadow Walker"),
+    Any = 255        UMETA(DisplayName = "Any")
 };
 
 /**
@@ -35,6 +35,9 @@ class SHARDSOFDAWN_API ASodPlayerCharacter : public ACharacter
 public:
     ASodPlayerCharacter();
 
+    UFUNCTION(BlueprintCallable, Category = "Archetype")
+    void SetArchetype(EPlayerArchetype NewArchetype);
+
     // ── Archetype ──────────────────────────────────────────────
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Archetype")
     EPlayerArchetype Archetype = EPlayerArchetype::LightWeaver;
@@ -48,10 +51,6 @@ public:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
     TObjectPtr<UCameraComponent> FollowCamera;
-
-    // ── Visual ──────────────────────────────────────────────────
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Visual")
-    TObjectPtr<UGroomComponent> HairComponent;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visual|Mesh")
     TSoftObjectPtr<USkeletalMesh> CharacterMesh;
@@ -71,7 +70,7 @@ public:
     float InteractionReach = 400.0f;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
-    TEnumAsByte<ECollisionChannel> InteractionTraceChannel = ECC_GameTraceChannel1;
+    TEnumAsByte<ECollisionChannel> InteractionTraceChannel = ECC_Visibility;
 
     // ── Net Role ────────────────────────────────────────────────
     UFUNCTION(BlueprintCallable, Category = "Network")
@@ -88,6 +87,9 @@ protected:
     void Jump();
     void StopJump();
     void TryInteract();
+
+    UFUNCTION(Server, Reliable)
+    void ServerInteract(AActor* InteractableActor);
 
     // ── Gameplay Ability System ─────────────────────────────────
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "GAS")
@@ -108,6 +110,9 @@ protected:
     // ── Animation ───────────────────────────────────────────────
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
     TObjectPtr<UAnimMontage> InteractionMontage;
+
+    UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "On Archetype Changed"))
+    void BP_OnArchetypeChanged(EPlayerArchetype NewArchetype);
 
     UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "On Interact"))
     void BP_OnInteract(AActor* InteractableActor);

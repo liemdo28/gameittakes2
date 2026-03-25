@@ -20,7 +20,7 @@ void ASodPlayerController::BeginPlay()
     {
         if (ASodPlayerCharacter* Char = Cast<ASodPlayerCharacter>(Pawn))
         {
-            ApplyInputMappingForArchetype();
+            RefreshInputMapping();
         }
     }
 }
@@ -31,7 +31,13 @@ void ASodPlayerController::SetupInputComponent()
     // IMC binding handled via Player subsystem in SodGameInstance
 }
 
-void ASodPlayerController::ApplyInputMappingForArchetype()
+void ASodPlayerController::OnPossess(APawn* InPawn)
+{
+    Super::OnPossess(InPawn);
+    RefreshInputMapping();
+}
+
+void ASodPlayerController::RefreshInputMapping()
 {
     if (UEnhancedInputLocalPlayerSubsystem* Subsystem =
         ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
@@ -40,11 +46,11 @@ void ASodPlayerController::ApplyInputMappingForArchetype()
 
         if (ASodPlayerCharacter* Char = Cast<ASodPlayerCharacter>(GetPawn()))
         {
-            if (Char->Archetype == EPlayerArchetype::LightWeaver && LightWeaver_IMC.IsValid())
+            if (Char->Archetype == EPlayerArchetype::LightWeaver && !LightWeaver_IMC.IsNull())
             {
                 Subsystem->AddMappingContext(LightWeaver_IMC.LoadSynchronous(), 0);
             }
-            else if (Char->Archetype == EPlayerArchetype::ShadowWalker && ShadowWalker_IMC.IsValid())
+            else if (Char->Archetype == EPlayerArchetype::ShadowWalker && !ShadowWalker_IMC.IsNull())
             {
                 Subsystem->AddMappingContext(ShadowWalker_IMC.LoadSynchronous(), 0);
             }

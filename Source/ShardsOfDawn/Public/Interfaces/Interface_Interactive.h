@@ -34,23 +34,4 @@ public:
     /** Called when player presses interact */
     UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
     void OnInteract(ASodPlayerCharacter* Interactor);
-
-    /** Internal execute — called from ASodPlayerCharacter::TryInteract */
-    void Execute_ExecuteInteraction(AActor* Target, ASodPlayerCharacter* Interactor);
-
-    /** Internal implementation proxy */
-    static void ExecuteInteraction(AActor* Target, ASodPlayerCharacter* Interactor);
 };
-
-// ── Default implementation inline ────────────────────────────────────────────
-
-inline void IInterface_Interactive::Execute_ExecuteInteraction(AActor* Target, ASodPlayerCharacter* Interactor)
-{
-    if (Target)
-    {
-        if (auto* Interface = Cast<IInterface_Interactive>(Target))
-        {
-            Interface->OnInteract(Interactor);
-        }
-    }
-}

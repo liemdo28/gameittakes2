@@ -5,12 +5,14 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
-#include "Components/GroomComponent.h"
+#include "Controllers/SodPlayerController.h"
+#include "Interfaces/Interface_Interactive.h"
 #include "Net/UnrealNetwork.h"
 #include "Engine/World.h"
 #include "DrawDebugHelpers.h"
 #include "GameFramework/PlayerController.h"
 #include "Abilities/GameplayAbility.h"
+#include "Animation/AnimInstance.h"
 
 ASodPlayerCharacter::ASodPlayerCharacter()
 {
@@ -46,12 +48,24 @@ ASodPlayerCharacter::ASodPlayerCharacter()
     FollowCamera->bUsePawnControlRotation = false;
     FollowCamera->FieldOfView = 90.0f;
 
-    // ── Hair/Groom ───────────────────────────────────────────────
-    HairComponent = CreateDefaultSubobject<UGroomComponent>(TEXT("HairComponent"));
-    HairComponent->SetupAttachment(GetMesh());
-
     // ── Net ──────────────────────────────────────────────────────
     RepArchetype = Archetype;
+}
+
+void ASodPlayerCharacter::SetArchetype(EPlayerArchetype NewArchetype)
+{
+    Archetype = NewArchetype;
+    RepArchetype = NewArchetype;
+
+    if (GetLocalRole() != ROLE_SimulatedProxy)
+    {
+        BP_OnArchetypeChanged(NewArchetype);
+    }
+
+    if (ASodPlayerController* PlayerController = Cast<ASodPlayerController>(Controller))
+    {
+        PlayerController->RefreshInputMapping();
+    }
 }
 
 void ASodPlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -63,7 +77,12 @@ void ASodPlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 void ASodPlayerCharacter::OnRep_ArchetypeChanged()
 {
     Archetype = RepArchetype;
-    BP_OnInteract(nullptr); // Trigger archetype visual swap via BP event
+    BP_OnArchetypeChanged(RepArchetype);
+
+    if (ASodPlayerController* PlayerController = Cast<ASodPlayerController>(Controller))
+    {
+        PlayerController->RefreshInputMapping();
+    }
 }
 
 FString ASodPlayerCharacter::GetDebugRoleString() const
@@ -170,14 +189,24 @@ void ASodPlayerCharacter::TryInteract()
     if (TraceForInteractable(Hit))
     {
         AActor* HitActor = Hit.GetActor();
-        if (HitActor)
+        if (HitActor && HitActor->GetClass()->ImplementsInterface(UInterface_Interactive::StaticClass()))
         {
-            // Notify the actor we're interacting with it
-            IInterface_Interactive::Execute_ExecuteInteraction(HitActor, this);
-            BP_OnInteract(HitActor);
+            const bool bCanInteract = IInterface_Interactive::Execute_CanInteract(HitActor, this);
+            if (bCanInteract)
+            {
+                if (HasAuthority())
+                {
+                    IInterface_Interactive::Execute_OnInteract(HitActor, this);
+                }
+                else
+                {
+                    ServerInteract(HitActor);
+                }
 
-            // Play montage on authority
-            if (GetNetMode() != NM_DedicatedServer && InteractionMontage)
+                BP_OnInteract(HitActor);
+            }
+
+            if (bCanInteract && GetNetMode() != NM_DedicatedServer && InteractionMontage)
             {
                 UAnimInstance* AnimInst = GetMesh()->GetAnimInstance();
                 if (AnimInst)
@@ -193,4 +222,23 @@ void ASodPlayerCharacter::TryInteract()
     DrawDebugSphere(GetWorld(), GetActorLocation() + GetActorForwardVector() * (InteractionReach * 0.5f),
         8.0f, 8, FColor::Cyan, false, 1.0f, 0, 1.0f);
 #endif
+}
+
+void ASodPlayerCharacter::ServerInteract_Implementation(AActor* InteractableActor)
+{
+    if (!InteractableActor || !InteractableActor->GetClass()->ImplementsInterface(UInterface_Interactive::StaticClass()))
+    {
+        return;
+    }
+
+    const float MaxInteractDistance = FMath::Square(InteractionReach + 100.0f);
+    if (FVector::DistSquared(GetActorLocation(), InteractableActor->GetActorLocation()) > MaxInteractDistance)
+    {
+        return;
+    }
+
+    if (IInterface_Interactive::Execute_CanInteract(InteractableActor, this))
+    {
+        IInterface_Interactive::Execute_OnInteract(InteractableActor, this);
+    }
 }

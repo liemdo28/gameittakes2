@@ -21,6 +21,7 @@ public:
 
 protected:
     void BeginPlay() override;
+    void Tick(float DeltaSeconds) override;
 
     // ── Light Properties ─────────────────────────────────────────
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LightShard|Light")
@@ -43,9 +44,6 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LightShard|Animation")
     float FloatSpeed = 2.0f;
 
-    UFUNCTION(BlueprintOverride)
-    void Tick(float DeltaSeconds) override;
-
     // ── Archetype Enforcement ────────────────────────────────────
     bool CanInteract_Implementation(ASodPlayerCharacter* Interactor) const override;
     void OnInteract_Implementation(ASodPlayerCharacter* Interactor) override;
@@ -53,4 +51,6 @@ protected:
 private:
     float InitialZ;
     float TimeAccum = 0.0f;
+
+    void HandleActivationStateChanged(bool bActivated) override;
 };

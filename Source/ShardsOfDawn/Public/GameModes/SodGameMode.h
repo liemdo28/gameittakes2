@@ -22,8 +22,8 @@ public:
     ASodGameMode();
 
     // ── Player Spawning ──────────────────────────────────────────
-    void Generic_PawnSpawner(APlayerController* NewPlayerController) override;
     AActor* ChoosePlayerStart_Implementation(AController* Player) override;
+    UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
 
     // ── Archetype Assignment ─────────────────────────────────────
     /** Assigns archetype to player based on index (0 = Light Weaver, 1 = Shadow Walker) */
@@ -46,7 +46,7 @@ public:
     TArray<FName> ActivatedShardIDs;
 
     UFUNCTION(BlueprintCallable, Category = "Puzzle")
-    void RegisterActivatedShard(FName ShardID);
+    void SetShardActivationState(FName ShardID, bool bActivated);
 
     UFUNCTION(BlueprintCallable, Category = "Puzzle")
     void ResetAllPuzzles();
@@ -58,6 +58,7 @@ public:
 protected:
     void PostLogin(APlayerController* NewPlayer) override;
     void Logout(AController* OldPlayer) override;
+    void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
     // ── Config ───────────────────────────────────────────────────
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")

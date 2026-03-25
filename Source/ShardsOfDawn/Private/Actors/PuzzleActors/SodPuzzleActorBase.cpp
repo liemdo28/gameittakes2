@@ -1,11 +1,11 @@
 // Copyright Shards of Dawn Team 2026
 
 #include "Actors/PuzzleActors/SodPuzzleActorBase.h"
+#include "NiagaraComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SphereComponent.h"
-#include "Components/NiagaraComponent.h"
 #include "Components/RotatingMovementComponent.h"
-#include "GameFramework/PhysicsVolume.h"
+#include "GameModes/SodGameMode.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
@@ -45,7 +45,8 @@ ASodPuzzleActorBase::ASodPuzzleActorBase()
     // ── Defaults ──────────────────────────────────────────────────
     PrimaryActorTick.bCanEverTick = true;
     PuzzleName = FText::FromString(TEXT("Unknown Puzzle"));
-    RequiredArchetype = 0; // Either
+    RequiredArchetype = EPlayerArchetype::Any;
+    ShardID = NAME_None;
 }
 
 void ASodPuzzleActorBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -72,10 +73,13 @@ FText ASodPuzzleActorBase::GetInteractionPrompt_Implementation() const
 bool ASodPuzzleActorBase::CanInteract_Implementation(ASodPlayerCharacter* Interactor) const
 {
     if (!Interactor) return false;
-    if (bRequiresBothArchetypes) return false; // Handled by game mode
+    if (bRequiresBothArchetypes && !HasBothArchetypesReady(Interactor))
+    {
+        return false;
+    }
 
     // Check archetype requirement
-    if (RequiredArchetype != 0 && Interactor->Archetype != RequiredArchetype)
+    if (RequiredArchetype != EPlayerArchetype::Any && Interactor->Archetype != RequiredArchetype)
     {
         return false;
     }
@@ -88,12 +92,15 @@ void ASodPuzzleActorBase::OnInteract_Implementation(ASodPlayerCharacter* Interac
 
     if (bRequiresBothArchetypes)
     {
-        BP_OnInteractionFailed(Interactor, FText::FromString(TEXT("Requires both players!")));
-        PlaySoundAtLocation(InteractionAttemptSound);
-        return;
+        if (!HasBothArchetypesReady(Interactor))
+        {
+            BP_OnInteractionFailed(Interactor, FText::FromString(TEXT("Both archetypes must be present.")));
+            PlaySoundAtLocation(InteractionAttemptSound);
+            return;
+        }
     }
 
-    if (RequiredArchetype != 0 && Interactor->Archetype != RequiredArchetype)
+    if (RequiredArchetype != EPlayerArchetype::Any && Interactor->Archetype != RequiredArchetype)
     {
         BP_OnInteractionFailed(Interactor,
             FText::FromString(Interactor->Archetype == EPlayerArchetype::LightWeaver
@@ -109,37 +116,13 @@ void ASodPuzzleActorBase::OnInteract_Implementation(ASodPlayerCharacter* Interac
 
 void ASodPuzzleActorBase::Server_SetActivated_Implementation(bool bActivated, ASodPlayerCharacter* Interactor)
 {
-    RepIsActivated = bActivated;
-    bIsActivated = bActivated;
-
-    if (bActivated)
-    {
-        BP_OnActivated(Interactor);
-        ApplyMaterial(ActiveMaterial.Get());
-        VFXComp->Activate(true);
-        PlaySoundAtLocation(ActivationSound);
-    }
-    else
-    {
-        BP_OnDeactivated(Interactor);
-        ApplyMaterial(InactiveMaterial.Get());
-        VFXComp->Deactivate();
-    }
+    ApplyActivationState(bActivated, Interactor);
 }
 
 void ASodPuzzleActorBase::OnRep_IsActivated()
 {
     bIsActivated = RepIsActivated;
-    if (bIsActivated)
-    {
-        ApplyMaterial(ActiveMaterial.Get());
-        if (VFXComp && !VFXComp->IsActive()) VFXComp->Activate(true);
-    }
-    else
-    {
-        ApplyMaterial(InactiveMaterial.Get());
-        if (VFXComp) VFXComp->Deactivate();
-    }
+    HandleActivationStateChanged(bIsActivated);
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -157,5 +140,76 @@ void ASodPuzzleActorBase::PlaySoundAtLocation(USoundBase* Sound)
     if (Sound)
     {
         UGameplayStatics::PlaySoundAtLocation(this, Sound, GetActorLocation(), FRotator::ZeroRotator);
+    }
+}
+
+void ASodPuzzleActorBase::ResetPuzzleState()
+{
+    ApplyActivationState(false, nullptr);
+}
+
+void ASodPuzzleActorBase::HandleActivationStateChanged(bool bActivated)
+{
+    if (bActivated)
+    {
+        ApplyMaterial(ActiveMaterial.IsNull() ? nullptr : ActiveMaterial.LoadSynchronous());
+        if (VFXComp && !VFXComp->IsActive())
+        {
+            VFXComp->Activate(true);
+        }
+    }
+    else
+    {
+        ApplyMaterial(InactiveMaterial.IsNull() ? nullptr : InactiveMaterial.LoadSynchronous());
+        if (VFXComp)
+        {
+            VFXComp->Deactivate();
+        }
+    }
+}
+
+bool ASodPuzzleActorBase::HasBothArchetypesReady(ASodPlayerCharacter* Interactor) const
+{
+    bool bHasLightWeaver = Interactor && Interactor->Archetype == EPlayerArchetype::LightWeaver;
+    bool bHasShadowWalker = Interactor && Interactor->Archetype == EPlayerArchetype::ShadowWalker;
+
+    if (InteractionZone)
+    {
+        TArray<AActor*> OverlappingActors;
+        InteractionZone->GetOverlappingActors(OverlappingActors, ASodPlayerCharacter::StaticClass());
+
+        for (AActor* Actor : OverlappingActors)
+        {
+            if (const ASodPlayerCharacter* PlayerCharacter = Cast<ASodPlayerCharacter>(Actor))
+            {
+                bHasLightWeaver |= PlayerCharacter->Archetype == EPlayerArchetype::LightWeaver;
+                bHasShadowWalker |= PlayerCharacter->Archetype == EPlayerArchetype::ShadowWalker;
+            }
+        }
+    }
+
+    return bHasLightWeaver && bHasShadowWalker;
+}
+
+void ASodPuzzleActorBase::ApplyActivationState(bool bActivated, ASodPlayerCharacter* Interactor)
+{
+    RepIsActivated = bActivated;
+    bIsActivated = bActivated;
+
+    HandleActivationStateChanged(bActivated);
+
+    if (ASodGameMode* GameMode = GetWorld() ? Cast<ASodGameMode>(UGameplayStatics::GetGameMode(this)) : nullptr)
+    {
+        GameMode->SetShardActivationState(ShardID, bActivated);
+    }
+
+    if (bActivated)
+    {
+        BP_OnActivated(Interactor);
+        PlaySoundAtLocation(ActivationSound.IsNull() ? nullptr : ActivationSound.LoadSynchronous());
+    }
+    else
+    {
+        BP_OnDeactivated(Interactor);
     }
 }

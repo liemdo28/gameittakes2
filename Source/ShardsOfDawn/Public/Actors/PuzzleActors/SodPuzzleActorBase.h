@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Characters/SodPlayerCharacter.h"
 #include "Interfaces/Interface_Interactive.h"
 #include "GameFramework/Actor.h"
 #include "SodPuzzleActorBase.generated.h"
@@ -37,11 +38,14 @@ public:
     bool bIsActivated = false;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Puzzle")
+    FName ShardID;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Puzzle")
     bool bRequiresBothArchetypes = false;
 
     /** Light Weaver / Shadow Walker / Either */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Puzzle")
-    TEnumAsByte<enum EPlayerArchetype> RequiredArchetype;
+    TEnumAsByte<EPlayerArchetype> RequiredArchetype = EPlayerArchetype::Any;
 
     // ── Components ───────────────────────────────────────────────
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
@@ -86,12 +90,17 @@ public:
     UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "On Interaction Failed"))
     void BP_OnInteractionFailed(ASodPlayerCharacter* Interactor, const FText& Reason);
 
+    UFUNCTION(BlueprintCallable, Category = "Puzzle")
+    void ResetPuzzleState();
+
 protected:
     UFUNCTION(Server, Reliable)
     void Server_SetActivated(bool bActivated, ASodPlayerCharacter* Interactor);
     void ApplyMaterial(UMaterialInterface* Material);
     void PlaySoundAtLocation(USoundBase* Sound);
-    void SetActorPhysicsEnabled(bool bEnabled);
+    virtual void HandleActivationStateChanged(bool bActivated);
+    bool HasBothArchetypesReady(ASodPlayerCharacter* Interactor) const;
+    void ApplyActivationState(bool bActivated, ASodPlayerCharacter* Interactor);
 
     UPROPERTY(ReplicatedUsing = OnRep_IsActivated)
     bool RepIsActivated = false;

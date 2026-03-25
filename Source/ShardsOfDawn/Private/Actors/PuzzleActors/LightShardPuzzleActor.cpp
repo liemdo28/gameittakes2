@@ -27,11 +27,13 @@ void ALightShardPuzzleActor::BeginPlay()
     PointLight->SetupAttachment(RootComponent);
     PointLight->SetLightColor(LightColor);
     PointLight->SetIntensity(LightIntensity);
+    PointLight->SetAttenuationRadius(LightRadius);
     PointLight->SetSourceRadius(30.0f);
     PointLight->SetFalloffExponent(2.0f);
     PointLight->SetSourceLength(0.0f);
     PointLight->bAutoActivate = false;
     PointLight->RegisterComponent();
+    HandleActivationStateChanged(bIsActivated);
 }
 
 bool ALightShardPuzzleActor::CanInteract_Implementation(ASodPlayerCharacter* Interactor) const
@@ -62,5 +64,16 @@ void ALightShardPuzzleActor::Tick(float DeltaSeconds)
         FVector Pos = GetActorLocation();
         Pos.Z = InitialZ + FMath::Sin(TimeAccum * FloatSpeed) * FloatAmplitude;
         SetActorLocation(Pos, true);
+    }
+}
+
+void ALightShardPuzzleActor::HandleActivationStateChanged(bool bActivated)
+{
+    Super::HandleActivationStateChanged(bActivated);
+
+    if (PointLight)
+    {
+        PointLight->SetVisibility(bActivated);
+        PointLight->SetActive(bActivated);
     }
 }

@@ -9,6 +9,9 @@
 
 class UBoxComponent;
 class UStaticMeshComponent;
+class USceneComponent;
+class UMaterialInterface;
+class USoundBase;
 
 /**
  * CoopBridgeActor — Visualizes co-op interdependence.
@@ -58,6 +61,7 @@ public:
 
 protected:
     void BeginPlay() override;
+    void Tick(float DeltaSeconds) override;
     void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
     // ── Components ──────────────────────────────────────────────
@@ -105,6 +109,7 @@ protected:
     void TriggerLower();
     void TriggerRaise();
     void ApplyMaterial(UMaterialInterface* Mat);
+    void ApplyBridgePose(bool bLowered);
 
     // Timer handles
     FTimerHandle LowerTimerHandle;

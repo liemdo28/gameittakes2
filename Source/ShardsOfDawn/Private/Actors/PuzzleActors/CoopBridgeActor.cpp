@@ -3,6 +3,7 @@
 #include "Actors/PuzzleActors/CoopBridgeActor.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/BoxComponent.h"
+#include "Components/SceneComponent.h"
 #include "GameModes/SodGameMode.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
@@ -38,7 +39,7 @@ ACoopBridgeActor::ACoopBridgeActor()
     LoweredLocation->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 
     // Start raised
-    SetActorRelativeLocation(FVector(0.0f, 0.0f, 300.0f));
+    BridgeMesh->SetRelativeLocation(StartLocation->GetRelativeLocation());
 
     PrimaryActorTick.bCanEverTick = true;
 
@@ -75,7 +76,8 @@ void ACoopBridgeActor::BeginPlay()
     }
 
     // Apply initial locked material
-    ApplyMaterial(LockedMaterial.Get());
+    ApplyMaterial(LockedMaterial.IsNull() ? nullptr : LockedMaterial.LoadSynchronous());
+    ApplyBridgePose(bIsLowered);
 }
 
 void ACoopBridgeActor::Tick(float DeltaSeconds)
@@ -117,15 +119,21 @@ void ACoopBridgeActor::UpdateActivationState()
 {
     if (CachedActivationCount >= RequiredActivationCount && !bIsLowered)
     {
-        // All shards active — trigger lowering after delay
-        GetWorldTimerManager().SetTimer(
-            LowerTimerHandle, this, &ACoopBridgeActor::TriggerLower,
-            ActivationDelay, false);
+        if (!GetWorldTimerManager().IsTimerActive(LowerTimerHandle))
+        {
+            GetWorldTimerManager().SetTimer(
+                LowerTimerHandle, this, &ACoopBridgeActor::TriggerLower,
+                ActivationDelay, false);
+        }
     }
-    else if (CachedActivationCount < RequiredActivationCount && bIsLowered)
+    else if (CachedActivationCount < RequiredActivationCount)
     {
-        // Shards deactivated — raise bridge
-        TriggerRaise();
+        GetWorldTimerManager().ClearTimer(LowerTimerHandle);
+
+        if (bIsLowered)
+        {
+            TriggerRaise();
+        }
     }
 }
 
@@ -134,16 +142,13 @@ void ACoopBridgeActor::TriggerLower()
     if (bIsLowered) return;
 
     bIsLowered = true;
+    ApplyBridgePose(true);
 
-    // Animate bridge down
-    if (LoweredLocation)
+    ApplyMaterial(FullyActiveMaterial.IsNull() ? nullptr : FullyActiveMaterial.LoadSynchronous());
+    if (!LowerSound.IsNull())
     {
-        FVector Target = LoweredLocation->GetComponentLocation();
-        SetActorLocation(Target, true);
+        UGameplayStatics::PlaySoundAtLocation(this, LowerSound.LoadSynchronous(), GetActorLocation());
     }
-
-    ApplyMaterial(FullyActiveMaterial.Get());
-    UGameplayStatics::PlaySoundAtLocation(this, LowerSound, GetActorLocation());
 }
 
 void ACoopBridgeActor::TriggerRaise()
@@ -152,20 +157,18 @@ void ACoopBridgeActor::TriggerRaise()
 
     bIsLowered = false;
     GetWorldTimerManager().ClearTimer(LowerTimerHandle);
+    ApplyBridgePose(false);
 
-    if (StartLocation)
+    ApplyMaterial(LockedMaterial.IsNull() ? nullptr : LockedMaterial.LoadSynchronous());
+    if (!RaiseSound.IsNull())
     {
-        FVector Target = StartLocation->GetComponentLocation();
-        SetActorLocation(Target, true);
+        UGameplayStatics::PlaySoundAtLocation(this, RaiseSound.LoadSynchronous(), GetActorLocation());
     }
-
-    ApplyMaterial(LockedMaterial.Get());
-    UGameplayStatics::PlaySoundAtLocation(this, RaiseSound, GetActorLocation());
 }
 
 void ACoopBridgeActor::OnRep_IsLowered()
 {
-    // Client visual update handled by SetActorLocation in TriggerLower/Raise
+    ApplyBridgePose(bIsLowered);
 }
 
 void ACoopBridgeActor::OnRep_ActivationProgress()
@@ -173,15 +176,15 @@ void ACoopBridgeActor::OnRep_ActivationProgress()
     // Update material to reflect partial progress
     if (ActivationProgress >= 1.0f)
     {
-        ApplyMaterial(FullyActiveMaterial.Get());
+        ApplyMaterial(FullyActiveMaterial.IsNull() ? nullptr : FullyActiveMaterial.LoadSynchronous());
     }
     else if (ActivationProgress > 0.0f)
     {
-        ApplyMaterial(PartiallyActiveMaterial.Get());
+        ApplyMaterial(PartiallyActiveMaterial.IsNull() ? nullptr : PartiallyActiveMaterial.LoadSynchronous());
     }
     else
     {
-        ApplyMaterial(LockedMaterial.Get());
+        ApplyMaterial(LockedMaterial.IsNull() ? nullptr : LockedMaterial.LoadSynchronous());
     }
 }
 
@@ -201,4 +204,18 @@ void ACoopBridgeActor::ApplyMaterial(UMaterialInterface* Mat)
     {
         BridgeMesh->SetMaterial(0, Mat);
     }
+}
+
+void ACoopBridgeActor::ApplyBridgePose(bool bLowered)
+{
+    if (!BridgeMesh || !StartLocation || !LoweredLocation)
+    {
+        return;
+    }
+
+    const FVector TargetLocation = bLowered
+        ? LoweredLocation->GetRelativeLocation()
+        : StartLocation->GetRelativeLocation();
+
+    BridgeMesh->SetRelativeLocation(TargetLocation);
 }

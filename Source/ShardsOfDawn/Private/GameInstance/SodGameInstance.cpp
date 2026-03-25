@@ -30,8 +30,10 @@ void USodGameInstance::ApplyIMC(int32 PlayerIndex, UInputMappingContext* IMC)
 {
     if (!IMC) return;
 
-    if (ULocalPlayer* LP = GetLocalPlayerByIndex(PlayerIndex))
+    const TArray<TObjectPtr<ULocalPlayer>>& LocalPlayers = GetLocalPlayers();
+    if (LocalPlayers.IsValidIndex(PlayerIndex))
     {
+        ULocalPlayer* LP = LocalPlayers[PlayerIndex];
         if (UEnhancedInputLocalPlayerSubsystem* Sub =
             ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(LP))
         {
@@ -44,8 +46,10 @@ void USodGameInstance::RemoveIMC(int32 PlayerIndex, UInputMappingContext* IMC)
 {
     if (!IMC) return;
 
-    if (ULocalPlayer* LP = GetLocalPlayerByIndex(PlayerIndex))
+    const TArray<TObjectPtr<ULocalPlayer>>& LocalPlayers = GetLocalPlayers();
+    if (LocalPlayers.IsValidIndex(PlayerIndex))
     {
+        ULocalPlayer* LP = LocalPlayers[PlayerIndex];
         if (UEnhancedInputLocalPlayerSubsystem* Sub =
             ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(LP))
         {
