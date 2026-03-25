@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Puzzle/SODPuzzleActor.h"
+#include "Actors/PuzzleActors/SODPuzzleActor.h"
 #include "SODPuzzleDoor.generated.h"
 
 /**

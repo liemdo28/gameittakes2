@@ -1,6 +1,6 @@
 // Copyright Shards of Dawn. All Rights Reserved.
 
-#include "Puzzle/SODPuzzleActor.h"
+#include "Actors/PuzzleActors/SODPuzzleActor.h"
 #include "Characters/SODPlayerCharacter.h"
 #include "Core/SODGameInstance.h"
 #include "Net/UnrealNetwork.h"
