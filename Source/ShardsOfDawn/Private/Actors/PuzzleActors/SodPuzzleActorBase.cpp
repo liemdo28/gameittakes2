@@ -6,7 +6,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/RotatingMovementComponent.h"
-#include "GameModes/SodGameMode.h"
+#include "Core/SODGameMode.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
@@ -159,6 +159,12 @@ void ASodPuzzleActorBase::PlaySoundAtLocation(USoundBase* Sound)
 
 void ASodPuzzleActorBase::ResetPuzzleState()
 {
+    // Called by ASODGameMode::ResetAllPuzzles() via IInterface_Interactive
+    IInterface_Interactive::ResetPuzzleState_Implementation();
+}
+
+void ASodPuzzleActorBase::ResetPuzzleState_Implementation()
+{
     ApplyActivationState(false, nullptr);
 }
 
@@ -212,7 +218,7 @@ void ASodPuzzleActorBase::ApplyActivationState(bool bActivated, ASODPlayerCharac
 
     HandleActivationStateChanged(bActivated);
 
-    if (ASodGameMode* GameMode = GetWorld() ? Cast<ASodGameMode>(UGameplayStatics::GetGameMode(this)) : nullptr)
+    if (ASODGameMode* GameMode = GetWorld() ? Cast<ASODGameMode>(UGameplayStatics::GetGameMode(this)) : nullptr)
     {
         GameMode->SetShardActivationState(ShardID, bActivated);
     }

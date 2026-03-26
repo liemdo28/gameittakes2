@@ -210,5 +210,28 @@ void ASODPlayerCharacter::PingPressed()
 void ASODPlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ASODPlayerCharacter, PlayerRole);
 	DOREPLIFETIME(ASODPlayerCharacter, bIsDown);
+}
+
+void ASODPlayerCharacter::SetPlayerRole_Implementation(ESODPlayerRole NewRole)
+{
+	PlayerRole = NewRole;
+	UE_LOG(LogTemp, Log, TEXT("[SODPlayerCharacter] Role set to: %s"),
+		NewRole == ESODPlayerRole::Light ? TEXT("Light") : TEXT("Shadow"));
+}
+
+void ASODPlayerCharacter::OnRep_PlayerRole()
+{
+	UE_LOG(LogTemp, Log, TEXT("[SODPlayerCharacter] Role replicated: %s"),
+		PlayerRole == ESODPlayerRole::Light ? TEXT("Light") : TEXT("Shadow"));
+
+	// Refresh controller IMC so input maps update on role change
+	if (APlayerController* PC = Cast<APlayerController>(GetController()))
+	{
+		if (PC->IsLocalController())
+		{
+			PC->ConsoleCommand(TEXT("refreshimc"), true);
+		}
+	}
 }

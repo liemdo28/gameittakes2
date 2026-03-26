@@ -37,6 +37,7 @@ public:
     FText GetInteractionPrompt_Implementation() const override;
     bool CanInteract_Implementation(ASODPlayerCharacter* Interactor) const override;
     virtual void OnInteract_Implementation(ASODPlayerCharacter* Interactor) override;
+    void ResetPuzzleState_Implementation() override;
 
     // ── Puzzle Properties ────────────────────────────────────────
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Puzzle")

@@ -19,6 +19,13 @@ Theo dõi bằng chứng “đã build/đã chạy/đã test” để tránh fal
 | 2026-03-25 | Automation | UE5 Editor setup batch script | `automation/setup_editor.bat` | Engineering | Completed |
 | 2026-03-25 | Automation | UE5 Python automation (Blueprint/map/IMC setup) | `automation/setup_prototype.py` | Engineering | Completed |
 | 2026-03-25 | Automation | Comprehensive UE5 Editor Setup Guide | `automation/UE5_EDITOR_SETUP_GUIDE.md` | Engineering | Completed |
+| 2026-03-26 | Architecture Fix | CEO Review gap fix: unified GameMode (Core/SODGameMode) + ShardRegistry | `Source/ShardsOfDawn/Core/SODGameMode.{h,cpp}` | Engineering | Completed |
+| 2026-03-26 | Architecture Fix | CEO Review gap fix: replicated SetPlayerRole + OnRep_PlayerRole | `Source/ShardsOfDawn/{Public,Private}/Characters/SODPlayerCharacter.{h,cpp}` | Engineering | Completed |
+| 2026-03-26 | Architecture Fix | CEO Review gap fix: ResetPuzzleState added to IInterface_Interactive | `Source/ShardsOfDawn/Public/Interfaces/Interface_Interactive.h` | Engineering | Completed |
+| 2026-03-26 | Architecture Fix | CEO Review gap fix: CoopBridgeActor -> Core/SODGameMode (was GameModes/SodGameMode) | `Source/ShardsOfDawn/*/Actors/PuzzleActors/CoopBridgeActor.{h,cpp}` | Engineering | Completed |
+| 2026-03-26 | Architecture Fix | CEO Review gap fix: SodPuzzleActorBase -> Core/SODGameMode | `Source/ShardsOfDawn/*/Actors/PuzzleActors/SodPuzzleActorBase.{h,cpp}` | Engineering | Completed |
+| 2026-03-26 | Architecture Fix | CEO Review gap fix: merged 2 GameInstance into Core/USODGameInstance | `Source/ShardsOfDawn/Core/SODGameInstance.{h,cpp}` | Engineering | Completed |
+| 2026-03-26 | Architecture Fix | CEO Review gap fix: LOCAL_BUILD_AND_RUN_GUIDE updated with unified architecture | `prototype/LOCAL_BUILD_AND_RUN_GUIDE.md` | Engineering | Completed |
 
 ## Mandatory Update Rule
 Mỗi lần claim “done” bắt buộc thêm evidence artifact vào bảng này.

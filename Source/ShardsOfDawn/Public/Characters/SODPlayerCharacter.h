@@ -79,8 +79,23 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SOD|Abilities")
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "SOD|Character")
+	/**
+	 * Player role — replicated so clients and puzzle actors know which archetype this is.
+	 * Set by ASODGameMode::AssignPlayerRole() on spawn. Blueprint默认值决定角色类型。
+	 */
+	UPROPERTY(ReplicatedUsing = OnRep_PlayerRole, EditDefaultsOnly, BlueprintReadOnly, Category = "SOD|Character",
+		Meta = (DisplayName = "Player Role (Light/Shadow)"))
 	ESODPlayerRole PlayerRole;
+
+	/**
+	 * Set role and replicate to all clients.
+	 * Call from ASODGameMode::AssignPlayerRole() after possession.
+	 */
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "SOD|Character")
+	void SetPlayerRole(ESODPlayerRole NewRole);
+
+	UFUNCTION()
+	void OnRep_PlayerRole();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "SOD|Input")
 	TObjectPtr<UInputMappingContext> DefaultMappingContext;

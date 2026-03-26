@@ -6,9 +6,18 @@
 #include "Engine/GameInstance.h"
 #include "SODGameInstance.generated.h"
 
+class UInputMappingContext;
+
 /**
- * Core game instance for Shards of Dawn.
- * Manages session lifecycle, player pairing, and persistent co-op state.
+ * USODGameInstance — CANONICAL GameInstance for Shards of Dawn.
+ *
+ * Responsibilities:
+ * - Session lifecycle (host / join co-op)
+ * - Cross-level persistence (chapter progress, co-op sync score)
+ * - IMC management helpers
+ * - Telemetry / event logging
+ *
+ * Architecture note: This is the SINGLE authoritative GameInstance class.
  */
 UCLASS()
 class SHARDSOFDAWN_API USODGameInstance : public UGameInstance
@@ -19,32 +28,52 @@ public:
 	USODGameInstance();
 
 	virtual void Init() override;
+	virtual void Shutdown() override;
 
-	/** Host a new co-op session (local split-screen or online) */
+	// ── Session ─────────────────────────────────────────────────────────────
+	/** Host a new co-op session (local split-screen or LAN). */
 	UFUNCTION(BlueprintCallable, Category = "SOD|Session")
 	void HostCoOpSession(bool bIsLAN);
 
-	/** Join an existing co-op session */
+	/** Join an existing co-op session by address. */
 	UFUNCTION(BlueprintCallable, Category = "SOD|Session")
 	void JoinCoOpSession(const FString& Address);
 
-	/** Get current chapter index (0-based) */
+	// ── Progress ────────────────────────────────────────────────────────────
 	UFUNCTION(BlueprintPure, Category = "SOD|Progress")
 	int32 GetCurrentChapter() const { return CurrentChapter; }
 
-	/** Get co-op sync score (0.0 - 1.0) */
+	UFUNCTION(BlueprintCallable, Category = "SOD|Progress")
+	void AdvanceChapter();
+
+	UFUNCTION(BlueprintCallable, Category = "SOD|Progress")
+	void ResetProgress();
+
+	// ── Co-op Sync Score ──────────────────────────────────────────────────
 	UFUNCTION(BlueprintPure, Category = "SOD|CoOp")
 	float GetCoOpSyncScore() const { return CoOpSyncScore; }
 
-	/** Add to the co-op sync score from successful cooperation */
 	UFUNCTION(BlueprintCallable, Category = "SOD|CoOp")
 	void AddCoOpSyncScore(float Delta);
 
+	// ── IMC Management ───────────────────────────────────────────────────
+	UFUNCTION(BlueprintCallable, Category = "SOD|Input")
+	void ApplyIMC(int32 PlayerIndex, UInputMappingContext* IMC);
+
+	UFUNCTION(BlueprintCallable, Category = "SOD|Input")
+	void RemoveIMC(int32 PlayerIndex, UInputMappingContext* IMC);
+
+	// ── Telemetry ─────────────────────────────────────────────────────────
+	UFUNCTION(BlueprintCallable, Category = "SOD|Telemetry")
+	void LogGameEvent(const FString& EventName, const TMap<FString, FString>& Params);
+
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = "SOD|Progress")
-	int32 CurrentChapter;
+	int32 CurrentChapter = 0;
 
-	/** Tracks how well the two players cooperate (drives adaptive music/VO) */
 	UPROPERTY(BlueprintReadOnly, Category = "SOD|CoOp")
-	float CoOpSyncScore;
+	float CoOpSyncScore = 0.5f;
+
+	UPROPERTY(BlueprintReadWrite, Category = "SOD|Progress")
+	FString SaveSlotName = TEXT("Slot_AutoSave");
 };
