@@ -1,66 +1,58 @@
 {
-  "FileVersion": 3,
-  "EngineAssociation": "5.4",
-  "Category": "Games",
-  "Description": "Shards of Dawn - A premium co-op action-adventure game featuring Light/Shadow dual-state mechanics.",
-  "Modules": [
-    {
-      "Name": "ShardsOfDawn",
-      "Type": "Runtime",
-      "LoadingPhase": "Default",
-      "AdditionalDependencies": [
-        "Engine",
-        "GameplayAbilities",
-        "EnhancedInput"
-      ]
-    },
-    {
-      "Name": "ShardsOfDawnEditor",
-      "Type": "Editor",
-      "LoadingPhase": "PostEngineInit"
-    }
-  ],
-  "Plugins": [
-    {
-      "Name": "GameplayAbilities",
-      "Enabled": true
-    },
-    {
-      "Name": "GameplayTags",
-      "Enabled": true
-    },
-    {
-      "Name": "GameplayTasks",
-      "Enabled": true
-    },
-    {
-      "Name": "EnhancedInput",
-      "Enabled": true
-    },
-    {
-      "Name": "Niagara",
-      "Enabled": true
-    },
-    {
-      "Name": "OnlineSubsystem",
-      "Enabled": true
-    },
-    {
-      "Name": "OnlineSubsystemUtils",
-      "Enabled": true
-    },
-    {
-      "Name": "OnlineSubsystemNull",
-      "Enabled": true
-    },
-    {
-      "Name": "CommonUI",
-      "Enabled": true
-    }
-  ],
-  "TargetPlatforms": [
-    "Windows",
-    "PS5",
-    "XSX"
-  ]
+	"FileVersion": 3,
+	"EngineAssociation": "5.7",
+	"Category": "Games",
+	"Description": "Shards of Dawn - A premium co-op action-adventure game featuring Light/Shadow dual-state mechanics.",
+	"Modules": [
+		{
+			"Name": "ShardsOfDawn",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine",
+				"GameplayAbilities",
+				"EnhancedInput"
+			]
+		},
+		{
+			"Name": "ShardsOfDawnEditor",
+			"Type": "Editor",
+			"LoadingPhase": "PostEngineInit"
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "GameplayAbilities",
+			"Enabled": true
+		},
+		{
+			"Name": "EnhancedInput",
+			"Enabled": true
+		},
+		{
+			"Name": "Niagara",
+			"Enabled": true
+		},
+		{
+			"Name": "OnlineSubsystem",
+			"Enabled": true
+		},
+		{
+			"Name": "OnlineSubsystemUtils",
+			"Enabled": true
+		},
+		{
+			"Name": "OnlineSubsystemNull",
+			"Enabled": true
+		},
+		{
+			"Name": "CommonUI",
+			"Enabled": true
+		}
+	],
+	"TargetPlatforms": [
+		"Windows",
+		"PS5",
+		"XSX"
+	]
 }

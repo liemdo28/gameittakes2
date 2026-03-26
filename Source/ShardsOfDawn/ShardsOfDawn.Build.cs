@@ -14,7 +14,6 @@ public class ShardsOfDawn : ModuleRules
             "InputCore",
             "EnhancedInput",
             "GameplayAbilities",
-            "GameplayTags",
             "GameplayTasks",
             "UMG",
             "Slate",
