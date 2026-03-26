@@ -52,7 +52,7 @@ public:
 
 	/** Execute co-op finisher (both players must trigger simultaneously) */
 	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "SOD|Combat")
-	void ServerAttemptFinisher(AController* Instigator);
+	void ServerAttemptFinisher(AController* InInstigator);
 
 	/** Debug: instantly defeat this enemy */
 	void DebugDefeat();

@@ -107,7 +107,7 @@ void ASODDualShieldEnemy::CheckShieldState()
 	}
 }
 
-void ASODDualShieldEnemy::ServerAttemptFinisher_Implementation(AController* Instigator)
+void ASODDualShieldEnemy::ServerAttemptFinisher_Implementation(AController* InInstigator)
 {
 	if (CurrentPhase != ESODShieldPhase::Vulnerable)
 	{
