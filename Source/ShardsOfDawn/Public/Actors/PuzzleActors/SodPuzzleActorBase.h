@@ -99,9 +99,6 @@ public:
     UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "On Interaction Failed"))
     void BP_OnInteractionFailed(ASODPlayerCharacter* Interactor, const FText& Reason);
 
-    UFUNCTION(BlueprintCallable, Category = "Puzzle")
-    void ResetPuzzleState();
-
 protected:
     UFUNCTION(Server, Reliable)
     void Server_SetActivated(bool bActivated, ASODPlayerCharacter* Interactor);
