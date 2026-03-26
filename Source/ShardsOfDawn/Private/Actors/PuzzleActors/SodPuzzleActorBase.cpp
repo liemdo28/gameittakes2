@@ -157,12 +157,6 @@ void ASodPuzzleActorBase::PlaySoundAtLocation(USoundBase* Sound)
     }
 }
 
-void ASodPuzzleActorBase::ResetPuzzleState()
-{
-    // Called by ASODGameMode::ResetAllPuzzles() via IInterface_Interactive
-    IInterface_Interactive::ResetPuzzleState_Implementation();
-}
-
 void ASodPuzzleActorBase::ResetPuzzleState_Implementation()
 {
     ApplyActivationState(false, nullptr);
