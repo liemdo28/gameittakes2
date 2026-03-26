@@ -54,6 +54,9 @@ public:
 	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "SOD|Combat")
 	void ServerAttemptFinisher(AController* Instigator);
 
+	/** Debug: instantly defeat this enemy */
+	void DebugDefeat();
+
 	UPROPERTY(BlueprintAssignable)
 	FOnShieldPhaseChanged OnShieldPhaseChanged;
 

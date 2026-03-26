@@ -51,6 +51,9 @@ public:
 	UFUNCTION(BlueprintPure, Category = "SOD|CoOp")
 	int32 GetTotalFailures() const { return TotalFailures; }
 
+	/** Debug: override sync score directly */
+	void DebugSetSyncScore(float NewScore) { SyncScore = NewScore; }
+
 private:
 	float SyncScore;
 	int32 TotalSuccesses;
