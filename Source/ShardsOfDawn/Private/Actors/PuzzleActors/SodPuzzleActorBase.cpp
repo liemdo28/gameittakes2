@@ -1,6 +1,7 @@
 // Copyright Shards of Dawn Team 2026
 
 #include "Actors/PuzzleActors/SodPuzzleActorBase.h"
+#include "Characters/SODPlayerCharacter.h"
 #include "NiagaraComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SphereComponent.h"
@@ -8,6 +9,20 @@
 #include "GameModes/SodGameMode.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
+
+namespace
+{
+bool MatchesRequiredRole(const ASODPlayerCharacter* Interactor, ESODPuzzleRoleRequirement RequiredRole)
+{
+    if (!Interactor || RequiredRole == ESODPuzzleRoleRequirement::Any)
+    {
+        return Interactor != nullptr;
+    }
+
+    return (RequiredRole == ESODPuzzleRoleRequirement::Light && Interactor->GetPlayerRole() == ESODPlayerRole::Light)
+        || (RequiredRole == ESODPuzzleRoleRequirement::Shadow && Interactor->GetPlayerRole() == ESODPlayerRole::Shadow);
+}
+}
 
 ASodPuzzleActorBase::ASodPuzzleActorBase()
 {
@@ -45,7 +60,7 @@ ASodPuzzleActorBase::ASodPuzzleActorBase()
     // ── Defaults ──────────────────────────────────────────────────
     PrimaryActorTick.bCanEverTick = true;
     PuzzleName = FText::FromString(TEXT("Unknown Puzzle"));
-    RequiredArchetype = EPlayerArchetype::Any;
+    RequiredRole = ESODPuzzleRoleRequirement::Any;
     ShardID = NAME_None;
 }
 
@@ -70,42 +85,41 @@ FText ASodPuzzleActorBase::GetInteractionPrompt_Implementation() const
     return FText::FromString(TEXT("[E] Interact"));
 }
 
-bool ASodPuzzleActorBase::CanInteract_Implementation(ASodPlayerCharacter* Interactor) const
+bool ASodPuzzleActorBase::CanInteract_Implementation(ASODPlayerCharacter* Interactor) const
 {
     if (!Interactor) return false;
-    if (bRequiresBothArchetypes && !HasBothArchetypesReady(Interactor))
+    if (bRequiresBothArchetypes && !HasBothRolesReady(Interactor))
     {
         return false;
     }
 
-    // Check archetype requirement
-    if (RequiredArchetype != EPlayerArchetype::Any && Interactor->Archetype != RequiredArchetype)
+    if (!MatchesRequiredRole(Interactor, RequiredRole))
     {
         return false;
     }
     return true;
 }
 
-void ASodPuzzleActorBase::OnInteract_Implementation(ASodPlayerCharacter* Interactor)
+void ASodPuzzleActorBase::OnInteract_Implementation(ASODPlayerCharacter* Interactor)
 {
     if (!Interactor) return;
 
     if (bRequiresBothArchetypes)
     {
-        if (!HasBothArchetypesReady(Interactor))
+        if (!HasBothRolesReady(Interactor))
         {
-            BP_OnInteractionFailed(Interactor, FText::FromString(TEXT("Both archetypes must be present.")));
+            BP_OnInteractionFailed(Interactor, FText::FromString(TEXT("Both co-op roles must be present.")));
             PlaySoundAtLocation(InteractionAttemptSound);
             return;
         }
     }
 
-    if (RequiredArchetype != EPlayerArchetype::Any && Interactor->Archetype != RequiredArchetype)
+    if (!MatchesRequiredRole(Interactor, RequiredRole))
     {
-        BP_OnInteractionFailed(Interactor,
-            FText::FromString(Interactor->Archetype == EPlayerArchetype::LightWeaver
-                ? TEXT("Light Weaver cannot activate this.")
-                : TEXT("Shadow Walker cannot activate this.")));
+        const FText FailureReason = (RequiredRole == ESODPuzzleRoleRequirement::Light)
+            ? FText::FromString(TEXT("Only Linh (Light) can activate this."))
+            : FText::FromString(TEXT("Only Nam (Shadow) can activate this."));
+        BP_OnInteractionFailed(Interactor, FailureReason);
         PlaySoundAtLocation(InteractionAttemptSound);
         return;
     }
@@ -114,7 +128,7 @@ void ASodPuzzleActorBase::OnInteract_Implementation(ASodPlayerCharacter* Interac
     Server_SetActivated(!RepIsActivated, Interactor);
 }
 
-void ASodPuzzleActorBase::Server_SetActivated_Implementation(bool bActivated, ASodPlayerCharacter* Interactor)
+void ASodPuzzleActorBase::Server_SetActivated_Implementation(bool bActivated, ASODPlayerCharacter* Interactor)
 {
     ApplyActivationState(bActivated, Interactor);
 }
@@ -168,30 +182,30 @@ void ASodPuzzleActorBase::HandleActivationStateChanged(bool bActivated)
     }
 }
 
-bool ASodPuzzleActorBase::HasBothArchetypesReady(ASodPlayerCharacter* Interactor) const
+bool ASodPuzzleActorBase::HasBothRolesReady(ASODPlayerCharacter* Interactor) const
 {
-    bool bHasLightWeaver = Interactor && Interactor->Archetype == EPlayerArchetype::LightWeaver;
-    bool bHasShadowWalker = Interactor && Interactor->Archetype == EPlayerArchetype::ShadowWalker;
+    bool bHasLightRole = Interactor && Interactor->GetPlayerRole() == ESODPlayerRole::Light;
+    bool bHasShadowRole = Interactor && Interactor->GetPlayerRole() == ESODPlayerRole::Shadow;
 
     if (InteractionZone)
     {
         TArray<AActor*> OverlappingActors;
-        InteractionZone->GetOverlappingActors(OverlappingActors, ASodPlayerCharacter::StaticClass());
+        InteractionZone->GetOverlappingActors(OverlappingActors, ASODPlayerCharacter::StaticClass());
 
         for (AActor* Actor : OverlappingActors)
         {
-            if (const ASodPlayerCharacter* PlayerCharacter = Cast<ASodPlayerCharacter>(Actor))
+            if (const ASODPlayerCharacter* PlayerCharacter = Cast<ASODPlayerCharacter>(Actor))
             {
-                bHasLightWeaver |= PlayerCharacter->Archetype == EPlayerArchetype::LightWeaver;
-                bHasShadowWalker |= PlayerCharacter->Archetype == EPlayerArchetype::ShadowWalker;
+                bHasLightRole |= PlayerCharacter->GetPlayerRole() == ESODPlayerRole::Light;
+                bHasShadowRole |= PlayerCharacter->GetPlayerRole() == ESODPlayerRole::Shadow;
             }
         }
     }
 
-    return bHasLightWeaver && bHasShadowWalker;
+    return bHasLightRole && bHasShadowRole;
 }
 
-void ASodPuzzleActorBase::ApplyActivationState(bool bActivated, ASodPlayerCharacter* Interactor)
+void ASodPuzzleActorBase::ApplyActivationState(bool bActivated, ASODPlayerCharacter* Interactor)
 {
     RepIsActivated = bActivated;
     bIsActivated = bActivated;

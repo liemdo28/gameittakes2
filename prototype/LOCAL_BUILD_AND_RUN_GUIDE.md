@@ -19,7 +19,7 @@
 - Play-in-editor launches successfully
 
 ## 5) Next Immediate Steps
-- [x] ✅ C++ PlayerCharacter (`ASodPlayerCharacter`) — archetype enum, interaction trace, replicated
+- [x] C++ PlayerCharacter (`ASODPlayerCharacter`) — role-based co-op character, GAS-enabled, replicated
 - [x] ✅ C++ PuzzleActors (`SodPuzzleActorBase` + `LightShard` + `ShadowShard`)
 - [x] ✅ C++ GameMode (`ASodGameMode`) + PlayerController + GameInstance
 - [x] ✅ Input Mapping Context stubs + Blueprint stubs (Light/Shadow archetypes)

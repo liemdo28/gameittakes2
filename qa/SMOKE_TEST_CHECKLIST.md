@@ -106,7 +106,7 @@
 - [ ] Shard activation replicates to remote client
 - [ ] Bridge state replicates to remote client
 - [ ] No `CheatManager` errors in log
-- [ ] `NetUpdateFrequency` = 100 Hz on `ASodPlayerCharacter`
+- [ ] Player replication defaults verified on `ASODPlayerCharacter`
 - [ ] No `GetLifetimeReplicatedProps` warnings
 
 ---

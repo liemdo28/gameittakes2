@@ -44,8 +44,8 @@ protected:
     float PulseSpeed = 3.0f;
 
     // ── Archetype Enforcement ───────────────────────────────────
-    bool CanInteract_Implementation(ASodPlayerCharacter* Interactor) const override;
-    void OnInteract_Implementation(ASodPlayerCharacter* Interactor) override;
+    bool CanInteract_Implementation(ASODPlayerCharacter* Interactor) const override;
+    void OnInteract_Implementation(ASODPlayerCharacter* Interactor) override;
 
 private:
     float InitialZ;

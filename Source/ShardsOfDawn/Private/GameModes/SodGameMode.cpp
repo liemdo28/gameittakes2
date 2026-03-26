@@ -2,7 +2,9 @@
 
 #include "GameModes/SodGameMode.h"
 #include "Actors/PuzzleActors/SodPuzzleActorBase.h"
-#include "Characters/SodPlayerCharacter.h"
+#include "Characters/SODLinhCharacter.h"
+#include "Characters/SODNamCharacter.h"
+#include "Characters/SODPlayerCharacter.h"
 #include "Controllers/SodPlayerController.h"
 #include "GameFramework/PlayerStart.h"
 #include "Interfaces/Interface_Interactive.h"
@@ -15,8 +17,9 @@ ASodGameMode::ASodGameMode()
     bReplicates = true;
     bDelayedStart = false;
 
-    // Default pawn class will be set via Blueprint or config
-    DefaultPawnClass = ASodPlayerCharacter::StaticClass();
+    LightWeaverClass = ASODLinhCharacter::StaticClass();
+    ShadowWalkerClass = ASODNamCharacter::StaticClass();
+    DefaultPawnClass = ASODPlayerCharacter::StaticClass();
 }
 
 void ASodGameMode::PostLogin(APlayerController* NewPlayer)
@@ -69,24 +72,24 @@ AActor* ASodGameMode::ChoosePlayerStart_Implementation(AController* Player)
 UClass* ASodGameMode::GetDefaultPawnClassForController_Implementation(AController* InController)
 {
     const bool bSpawnLightWeaver = ActivePlayerCount % 2 == 0;
-    const TSubclassOf<ASodPlayerCharacter> RequestedClass = bSpawnLightWeaver ? LightWeaverClass : ShadowWalkerClass;
+    const TSubclassOf<ASODPlayerCharacter> RequestedClass = bSpawnLightWeaver ? LightWeaverClass : ShadowWalkerClass;
 
     return RequestedClass ? RequestedClass.Get() : Super::GetDefaultPawnClassForController_Implementation(InController);
 }
 
 void ASodGameMode::AssignArchetype(int32 PlayerIndex, ASodPlayerController* PC)
 {
-    if (!PC) return;
-
-    EPlayerArchetype Archetype = (PlayerIndex % 2 == 0)
-        ? EPlayerArchetype::LightWeaver
-        : EPlayerArchetype::ShadowWalker;
+    if (!PC)
+    {
+        return;
+    }
 
     if (APawn* Pawn = PC->GetPawn())
     {
-        if (ASodPlayerCharacter* Char = Cast<ASodPlayerCharacter>(Pawn))
+        if (Cast<ASODPlayerCharacter>(Pawn))
         {
-            Char->SetArchetype(Archetype);
+            PC->RefreshInputMapping();
+            UE_LOG(LogTemp, Log, TEXT("[SodGameMode] Role assigned for player index %d"), PlayerIndex);
         }
     }
 }

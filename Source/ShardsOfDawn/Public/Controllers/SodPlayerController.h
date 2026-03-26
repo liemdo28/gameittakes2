@@ -8,6 +8,7 @@
 
 class UInputMappingContext;
 class UInputAction;
+class ASODHUD;
 
 /**
  * SodPlayerController — Handles input mapping context switching per archetype
@@ -30,7 +31,7 @@ public:
 
     // ── HUD ──────────────────────────────────────────────────────
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
-    TSubclassOf<class USodHUD> HUDClass;
+    TSubclassOf<ASODHUD> HUDClass;
 
     // ── UI State ─────────────────────────────────────────────────
     UFUNCTION(BlueprintCallable, Category = "UI")
@@ -54,6 +55,4 @@ protected:
     void SetupInputComponent() override;
     void OnPossess(APawn* InPawn) override;
 
-private:
-    TObjectPtr<class USodGameInstance> GameInstance;
 };

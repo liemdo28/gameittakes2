@@ -1,8 +1,7 @@
 // Copyright Shards of Dawn Team 2026
 
 #include "Controllers/SodPlayerController.h"
-#include "Characters/SodPlayerCharacter.h"
-#include "GameInstance/SodGameInstance.h"
+#include "Characters/SODPlayerCharacter.h"
 #include "EnhancedInputSubsystems.h"
 #include "Blueprint/UserWidget.h"
 
@@ -18,7 +17,7 @@ void ASodPlayerController::BeginPlay()
     // Apply archetype-specific IMC if we already have a pawn
     if (APawn* Pawn = GetPawn())
     {
-        if (ASodPlayerCharacter* Char = Cast<ASodPlayerCharacter>(Pawn))
+        if (Cast<ASODPlayerCharacter>(Pawn))
         {
             RefreshInputMapping();
         }
@@ -44,13 +43,13 @@ void ASodPlayerController::RefreshInputMapping()
     {
         Subsystem->ClearAllMappings();
 
-        if (ASodPlayerCharacter* Char = Cast<ASodPlayerCharacter>(GetPawn()))
+        if (ASODPlayerCharacter* Char = Cast<ASODPlayerCharacter>(GetPawn()))
         {
-            if (Char->Archetype == EPlayerArchetype::LightWeaver && !LightWeaver_IMC.IsNull())
+            if (Char->GetPlayerRole() == ESODPlayerRole::Light && !LightWeaver_IMC.IsNull())
             {
                 Subsystem->AddMappingContext(LightWeaver_IMC.LoadSynchronous(), 0);
             }
-            else if (Char->Archetype == EPlayerArchetype::ShadowWalker && !ShadowWalker_IMC.IsNull())
+            else if (Char->GetPlayerRole() == ESODPlayerRole::Shadow && !ShadowWalker_IMC.IsNull())
             {
                 Subsystem->AddMappingContext(ShadowWalker_IMC.LoadSynchronous(), 0);
             }

@@ -6,7 +6,7 @@
 #include "UObject/Interface.h"
 #include "Interface_Interactive.generated.h"
 
-class ASodPlayerCharacter;
+class ASODPlayerCharacter;
 
 /**
  * Interface for all interactive objects in the game world.
@@ -29,9 +29,9 @@ public:
 
     /** Whether this object can currently be interacted with */
     UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
-    bool CanInteract(ASodPlayerCharacter* Interactor) const;
+    bool CanInteract(ASODPlayerCharacter* Interactor) const;
 
     /** Called when player presses interact */
     UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
-    void OnInteract(ASodPlayerCharacter* Interactor);
+    void OnInteract(ASODPlayerCharacter* Interactor);
 };

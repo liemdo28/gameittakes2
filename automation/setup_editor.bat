@@ -8,6 +8,7 @@ setlocal enabledelayedexpansion
 set "PROJECT_ROOT=%~dp0.."
 set "UPROJECT=%PROJECT_ROOT%\ShardsOfDawn.uproject"
 set "UE_PATH=C:\Program Files\Epic Games\UE_5.4\Engine\Binaries\Win64\UnrealEditor.exe"
+set "UE_FOUND=0"
 
 echo ============================================================
 echo  ShardsOfDawn — UE5 Editor Setup
@@ -15,16 +16,33 @@ echo ============================================================
 echo.
 
 :: Step 1: Check UE5 installation
-echo [1/8] Checking Unreal Engine 5.4...
+echo [1/8] Checking Unreal Engine 5.4+...
 if exist "%UE_PATH%" (
+    set "UE_FOUND=1"
     echo     FOUND: %UE_PATH%
 ) else (
-    echo     [WARN] UE5.4 not found at default path.
-    echo     Searching alternative paths...
-    for /r "C:\Program Files\Epic Games" %%i in (UnrealEditor.exe) do (
-        if exist "%%i" echo     FOUND: %%i
+    echo     [WARN] UE5.4 default path not found.
+    echo     Searching installed UE5 versions...
+    for %%v in (5.7 5.6 5.5 5.4) do (
+        if !UE_FOUND!==0 if exist "C:\Program Files\Epic Games\UE_%%v\Engine\Binaries\Win64\UnrealEditor.exe" (
+            set "UE_PATH=C:\Program Files\Epic Games\UE_%%v\Engine\Binaries\Win64\UnrealEditor.exe"
+            set "UE_FOUND=1"
+        )
     )
-    echo     [WARN] Please set UE_PATH manually if not found.
+    if !UE_FOUND!==0 (
+        for /r "C:\Program Files\Epic Games" %%i in (UnrealEditor.exe) do (
+            if !UE_FOUND!==0 (
+                set "UE_PATH=%%i"
+                set "UE_FOUND=1"
+            )
+        )
+    )
+    if !UE_FOUND!==0 (
+        echo     [ERROR] UnrealEditor.exe not found under C:\Program Files\Epic Games.
+        echo     Install Unreal Engine 5.4 or later, then rerun this script.
+        exit /b 1
+    )
+    echo     FOUND: !UE_PATH!
 )
 
 :: Step 2: Generate project files
@@ -93,14 +111,14 @@ echo.
 echo [6/8] Checking C++ source files...
 set SRC_OK=1
 for %%f in (
-    "%PROJECT_ROOT%\Source\ShardsOfDawn\Public\Characters\SodPlayerCharacter.h"
+    "%PROJECT_ROOT%\Source\ShardsOfDawn\Public\Characters\SODPlayerCharacter.h"
     "%PROJECT_ROOT%\Source\ShardsOfDawn\Public\Actors\PuzzleActors\SodPuzzleActorBase.h"
     "%PROJECT_ROOT%\Source\ShardsOfDawn\Public\Actors\PuzzleActors\LightShardPuzzleActor.h"
     "%PROJECT_ROOT%\Source\ShardsOfDawn\Public\Actors\PuzzleActors\ShadowShardPuzzleActor.h"
     "%PROJECT_ROOT%\Source\ShardsOfDawn\Public\Actors\PuzzleActors\CoopBridgeActor.h"
-    "%PROJECT_ROOT%\Source\ShardsOfDawn\Public\GameModes\SodGameMode.h"
+    "%PROJECT_ROOT%\Source\ShardsOfDawn\Public\Core\SODGameMode.h"
     "%PROJECT_ROOT%\Source\ShardsOfDawn\Public\Controllers\SodPlayerController.h"
-    "%PROJECT_ROOT%\Source\ShardsOfDawn\Public\GameInstance\SodGameInstance.h"
+    "%PROJECT_ROOT%\Source\ShardsOfDawn\Public\Core\SODGameInstance.h"
 ) do (
     if not exist "%%f" (
         echo     [MISSING] %%f

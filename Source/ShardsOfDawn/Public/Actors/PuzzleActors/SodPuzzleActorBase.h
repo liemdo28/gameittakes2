@@ -3,15 +3,23 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Characters/SodPlayerCharacter.h"
 #include "Interfaces/Interface_Interactive.h"
 #include "GameFramework/Actor.h"
 #include "SodPuzzleActorBase.generated.h"
 
+class ASODPlayerCharacter;
 class UStaticMeshComponent;
 class USphereComponent;
 class UNiagaraComponent;
 class URotatingMovementComponent;
+
+UENUM(BlueprintType)
+enum class ESODPuzzleRoleRequirement : uint8
+{
+    Light UMETA(DisplayName = "Linh - Light"),
+    Shadow UMETA(DisplayName = "Nam - Shadow"),
+    Any UMETA(DisplayName = "Any")
+};
 
 /**
  * Base class for all puzzle objects in Shards of Dawn.
@@ -27,8 +35,8 @@ public:
 
     // ── IInterface_Interactive ──────────────────────────────────
     FText GetInteractionPrompt_Implementation() const override;
-    bool CanInteract_Implementation(ASodPlayerCharacter* Interactor) const override;
-    virtual void OnInteract_Implementation(ASodPlayerCharacter* Interactor) override;
+    bool CanInteract_Implementation(ASODPlayerCharacter* Interactor) const override;
+    virtual void OnInteract_Implementation(ASODPlayerCharacter* Interactor) override;
 
     // ── Puzzle Properties ────────────────────────────────────────
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Puzzle")
@@ -43,9 +51,9 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Puzzle")
     bool bRequiresBothArchetypes = false;
 
-    /** Light Weaver / Shadow Walker / Either */
+    /** Which co-op role can activate this puzzle, if any. */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Puzzle")
-    TEnumAsByte<EPlayerArchetype> RequiredArchetype = EPlayerArchetype::Any;
+    ESODPuzzleRoleRequirement RequiredRole = ESODPuzzleRoleRequirement::Any;
 
     // ── Components ───────────────────────────────────────────────
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
@@ -82,25 +90,25 @@ public:
 
     // ── Events ──────────────────────────────────────────────────
     UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "On Activated"))
-    void BP_OnActivated(ASodPlayerCharacter* Activator);
+    void BP_OnActivated(ASODPlayerCharacter* Activator);
 
     UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "On Deactivated"))
-    void BP_OnDeactivated(ASodPlayerCharacter* Deactivator);
+    void BP_OnDeactivated(ASODPlayerCharacter* Deactivator);
 
     UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "On Interaction Failed"))
-    void BP_OnInteractionFailed(ASodPlayerCharacter* Interactor, const FText& Reason);
+    void BP_OnInteractionFailed(ASODPlayerCharacter* Interactor, const FText& Reason);
 
     UFUNCTION(BlueprintCallable, Category = "Puzzle")
     void ResetPuzzleState();
 
 protected:
     UFUNCTION(Server, Reliable)
-    void Server_SetActivated(bool bActivated, ASodPlayerCharacter* Interactor);
+    void Server_SetActivated(bool bActivated, ASODPlayerCharacter* Interactor);
     void ApplyMaterial(UMaterialInterface* Material);
     void PlaySoundAtLocation(USoundBase* Sound);
     virtual void HandleActivationStateChanged(bool bActivated);
-    bool HasBothArchetypesReady(ASodPlayerCharacter* Interactor) const;
-    void ApplyActivationState(bool bActivated, ASodPlayerCharacter* Interactor);
+    bool HasBothRolesReady(ASODPlayerCharacter* Interactor) const;
+    void ApplyActivationState(bool bActivated, ASODPlayerCharacter* Interactor);
 
     UPROPERTY(ReplicatedUsing = OnRep_IsActivated)
     bool RepIsActivated = false;

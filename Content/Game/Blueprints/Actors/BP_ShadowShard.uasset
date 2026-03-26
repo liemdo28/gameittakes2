@@ -7,7 +7,7 @@ To create in UE5 Editor:
 1. Create new Blueprint class extending AShadowShardPuzzleActor
 2. Set default properties:
    - PuzzleName = "Shadow Shard Alpha"
-   - RequiredArchetype = ShadowWalker
+   - RequiredRole = Shadow
    - LightIntensity = 3000
    - LightRadius = 600
    - LightColor = FLinearColor(0.3, 0.1, 0.6) (violet)

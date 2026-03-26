@@ -141,9 +141,9 @@ def create_player_blueprints():
     log("=== Creating Player Blueprint Assets ===")
 
     # Load C++ base classes
-    light_weaver_base = unreal.Class("/Script/ShardsOfDawn.SodPlayerCharacter")
+    light_weaver_base = unreal.Class("/Script/ShardsOfDawn.SODPlayerCharacter")
     if not light_weaver_base:
-        err("Cannot load SodPlayerCharacter C++ class. Build project first!")
+        err("Cannot load SODPlayerCharacter C++ class. Build project first!")
         return
 
     bp_light = get_or_create_blueprint(

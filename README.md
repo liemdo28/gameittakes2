@@ -20,7 +20,7 @@ Two players must cooperate to solve puzzles, defeat enemies, and rebuild a shatt
 | CI/CD | Active (GitHub Actions source validation) |
 | Automation | Complete (setup_editor.bat, setup_prototype.py, Editor Guide) |
 | QA Artifacts | Complete (Smoke Test, Entry Gate, Playtest Plan, Tester Guide) |
-| Build & Playtest | Ready (requires UE5 5.4+ installed to compile) |
+| Build & Playtest | Ready (requires UE5 5.4+ installed and local project files generated) |
 
 ## Quick Start (for developers)
 
@@ -30,7 +30,7 @@ Two players must cooperate to solve puzzles, defeat enemies, and rebuild a shatt
 4. Compile C++ source (Visual Studio 2022 or Rider recommended)
 5. Open the `PrototypeRoom` map and press Play (2-player split-screen)
 
-For detailed setup steps, see: `automation/UE5_EDITOR_SETUP_GUIDE.md`
+For detailed setup steps, see: `docs/SETUP.md`
 
 ## Repository Structure
 
@@ -40,7 +40,7 @@ For detailed setup steps, see: `automation/UE5_EDITOR_SETUP_GUIDE.md`
 ├── Source/
 │   ├── ShardsOfDawn/
 │   │   ├── Public/
-│   │   │   ├── Characters/      # SodPlayerCharacter, SODLinhCharacter, SODNamCharacter
+│   │   │   ├── Characters/      # SODPlayerCharacter, SODLinhCharacter, SODNamCharacter
 │   │   │   ├── Abilities/       # GAS abilities (LightPulse, ShadowAnchor)
 │   │   │   ├── Actors/PuzzleActors/  # Puzzle system (dual-state, doors, shards, bridge)
 │   │   │   ├── Combat/          # SODDualShieldEnemy
@@ -128,8 +128,9 @@ LightShield → [Nam breaks it] → ShadowShield → [Linh breaks it] → Vulner
 3. `production/CEO_GAP_CLOSURE_PLAN.md` — 14-day prototype plan
 4. `tech/UE5_TECH_ARCHITECTURE.md` — Technical architecture
 5. `automation/UE5_EDITOR_SETUP_GUIDE.md` — Step-by-step editor setup
-6. `qa/SMOKE_TEST_CHECKLIST.md` — QA smoke test suite
-7. `prototype/LOCAL_BUILD_AND_RUN_GUIDE.md` — How to build and run locally
+6. `docs/SETUP.md` — Setup entrypoint and dependency validation
+7. `qa/SMOKE_TEST_CHECKLIST.md` — QA smoke test suite
+8. `prototype/LOCAL_BUILD_AND_RUN_GUIDE.md` — How to build and run locally
 
 ## For Testers
 

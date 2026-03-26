@@ -7,7 +7,7 @@
 #include "SodGameMode.generated.h"
 
 class ASodPlayerController;
-class ASodPlayerCharacter;
+class ASODPlayerCharacter;
 
 /**
  * SodGameMode — Entry game mode for Shards of Dawn prototype.
@@ -26,7 +26,7 @@ public:
     UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
 
     // ── Archetype Assignment ─────────────────────────────────────
-    /** Assigns archetype to player based on index (0 = Light Weaver, 1 = Shadow Walker) */
+    /** Maintains legacy BP hook while roles are now determined by the spawned character class. */
     UFUNCTION(BlueprintCallable, Category = "Archetype")
     void AssignArchetype(int32 PlayerIndex, class ASodPlayerController* PC);
 
@@ -62,10 +62,10 @@ protected:
 
     // ── Config ───────────────────────────────────────────────────
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
-    TSubclassOf<ASodPlayerCharacter> LightWeaverClass;
+    TSubclassOf<ASODPlayerCharacter> LightWeaverClass;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
-    TSubclassOf<ASodPlayerCharacter> ShadowWalkerClass;
+    TSubclassOf<ASODPlayerCharacter> ShadowWalkerClass;
 
     /** Player start tags used for archetype assignment */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")

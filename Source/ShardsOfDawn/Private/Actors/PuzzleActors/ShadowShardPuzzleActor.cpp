@@ -1,12 +1,12 @@
 // Copyright Shards of Dawn Team 2026
 
 #include "Actors/PuzzleActors/ShadowShardPuzzleActor.h"
-#include "Characters/SodPlayerCharacter.h"
+#include "Characters/SODPlayerCharacter.h"
 #include "Components/PointLightComponent.h"
 
 AShadowShardPuzzleActor::AShadowShardPuzzleActor()
 {
-    RequiredArchetype = EPlayerArchetype::ShadowWalker;
+    RequiredRole = ESODPuzzleRoleRequirement::Shadow;
     PuzzleName = FText::FromString(TEXT("Shadow Shard"));
 
     if (RotateComp)
@@ -32,17 +32,17 @@ void AShadowShardPuzzleActor::BeginPlay()
     HandleActivationStateChanged(bIsActivated);
 }
 
-bool AShadowShardPuzzleActor::CanInteract_Implementation(ASodPlayerCharacter* Interactor) const
+bool AShadowShardPuzzleActor::CanInteract_Implementation(ASODPlayerCharacter* Interactor) const
 {
-    return Interactor && Interactor->Archetype == EPlayerArchetype::ShadowWalker;
+    return Interactor && Interactor->GetPlayerRole() == ESODPlayerRole::Shadow;
 }
 
-void AShadowShardPuzzleActor::OnInteract_Implementation(ASodPlayerCharacter* Interactor)
+void AShadowShardPuzzleActor::OnInteract_Implementation(ASODPlayerCharacter* Interactor)
 {
     if (!CanInteract_Implementation(Interactor))
     {
         BP_OnInteractionFailed(Interactor,
-            FText::FromString(TEXT("Only Shadow Walker can activate this shard.")));
+            FText::FromString(TEXT("Only Nam (Shadow) can activate this shard.")));
         return;
     }
     Super::OnInteract_Implementation(Interactor);

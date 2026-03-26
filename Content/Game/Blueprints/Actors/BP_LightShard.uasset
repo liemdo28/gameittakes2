@@ -7,7 +7,7 @@ To create in UE5 Editor:
 1. Create new Blueprint class extending ALightShardPuzzleActor
 2. Set default properties:
    - PuzzleName = "Light Shard Alpha"
-   - RequiredArchetype = LightWeaver
+   - RequiredRole = Light
    - LightIntensity = 5000
    - LightRadius = 800
    - LightColor = FLinearColor(1.0, 0.85, 0.4)

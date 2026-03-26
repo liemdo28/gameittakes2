@@ -1,13 +1,13 @@
 // Copyright Shards of Dawn Team 2026
 
 #include "Actors/PuzzleActors/LightShardPuzzleActor.h"
-#include "Characters/SodPlayerCharacter.h"
+#include "Characters/SODPlayerCharacter.h"
 #include "Components/LightComponent.h"
 #include "Components/PointLightComponent.h"
 
 ALightShardPuzzleActor::ALightShardPuzzleActor()
 {
-    RequiredArchetype = EPlayerArchetype::LightWeaver;
+    RequiredRole = ESODPuzzleRoleRequirement::Light;
     PuzzleName = FText::FromString(TEXT("Light Shard"));
 
     // Slightly slower rotation for Light shard
@@ -36,18 +36,17 @@ void ALightShardPuzzleActor::BeginPlay()
     HandleActivationStateChanged(bIsActivated);
 }
 
-bool ALightShardPuzzleActor::CanInteract_Implementation(ASodPlayerCharacter* Interactor) const
+bool ALightShardPuzzleActor::CanInteract_Implementation(ASODPlayerCharacter* Interactor) const
 {
-    // Only Light Weaver can interact
-    return Interactor && Interactor->Archetype == EPlayerArchetype::LightWeaver;
+    return Interactor && Interactor->GetPlayerRole() == ESODPlayerRole::Light;
 }
 
-void ALightShardPuzzleActor::OnInteract_Implementation(ASodPlayerCharacter* Interactor)
+void ALightShardPuzzleActor::OnInteract_Implementation(ASODPlayerCharacter* Interactor)
 {
     if (!CanInteract_Implementation(Interactor))
     {
         BP_OnInteractionFailed(Interactor,
-            FText::FromString(TEXT("Only Light Weaver can activate this shard.")));
+            FText::FromString(TEXT("Only Linh (Light) can activate this shard.")));
         return;
     }
     Super::OnInteract_Implementation(Interactor);
