@@ -133,6 +133,16 @@ void ASODDualShieldEnemy::ServerAttemptFinisher_Implementation(AController* Inst
 	}
 }
 
+void ASODDualShieldEnemy::DebugDefeat()
+{
+	CurrentPhase = ESODShieldPhase::Defeated;
+	CurrentHealth = 0.0f;
+	CurrentLightShieldHP = 0.0f;
+	CurrentShadowShieldHP = 0.0f;
+	OnShieldPhaseChanged.Broadcast(CurrentPhase);
+	UE_LOG(LogTemp, Log, TEXT("SOD: %s debug defeated"), *GetName());
+}
+
 void ASODDualShieldEnemy::ResetFinisher()
 {
 	FinisherInputCount = 0;

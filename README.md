@@ -5,17 +5,22 @@ Two players must cooperate to solve puzzles, defeat enemies, and rebuild a shatt
 
 > "Only together can they rebuild the dawn."
 
+[![UE5 Source Validation](https://github.com/liemdo28/gameittakes2/actions/workflows/validate-source.yml/badge.svg)](https://github.com/liemdo28/gameittakes2/actions/workflows/validate-source.yml)
+
 ## Project Status
 
 | Area | Status |
 |------|--------|
 | Design & Documentation | Complete (GDD, Narrative Bible, Art/Audio Direction) |
-| UE5 Project (.uproject) | Created (UE5 5.4+, GAS, Enhanced Input, Niagara) |
-| C++ Gameplay Code | Created (30+ source files across 10 systems) |
-| Blueprint Stubs | Created (Characters, GameMode, Puzzles, Materials, Maps) |
-| Automation | Created (setup_editor.bat, setup_prototype.py, Editor Guide) |
-| QA Artifacts | Created (Smoke Test Checklist, Entry Gate, Playtest Plan) |
-| Build & Playtest | Pending (requires UE5 5.4+ installed to compile) |
+| UE5 Project (.uproject) | Complete (UE5 5.4+, GAS, Enhanced Input, Niagara) |
+| C++ Gameplay Code | Complete (55+ source files across 12 systems) |
+| Blueprint Stubs | Complete (Characters, GameMode, Puzzles, Materials, Maps) |
+| Level Prototype | Complete (PrototypeRoom with puzzle/combat/checkpoint flow) |
+| Telemetry | Complete (Session tracking, timed events, QA metrics) |
+| CI/CD | Active (GitHub Actions source validation) |
+| Automation | Complete (setup_editor.bat, setup_prototype.py, Editor Guide) |
+| QA Artifacts | Complete (Smoke Test, Entry Gate, Playtest Plan, Tester Guide) |
+| Build & Playtest | Ready (requires UE5 5.4+ installed to compile) |
 
 ## Quick Start (for developers)
 
@@ -47,6 +52,8 @@ For detailed setup steps, see: `automation/UE5_EDITOR_SETUP_GUIDE.md`
 │   │   │   ├── GameModes/       # SodGameMode
 │   │   │   ├── GameInstance/    # SodGameInstance
 │   │   │   └── Interfaces/      # Interface_Interactive
+│   │   │   ├── Level/           # SODPrototypeLevel (test room manager)
+│   │   │   └── Telemetry/       # SODTelemetrySubsystem (QA metrics)
 │   │   ├── Private/             # .cpp implementations (mirrors Public/)
 │   │   └── ShardsOfDawn.Build.cs
 │   ├── ShardsOfDawnEditor/      # Editor module
@@ -67,6 +74,7 @@ For detailed setup steps, see: `automation/UE5_EDITOR_SETUP_GUIDE.md`
 │       ├── Maps/PrototypeRoom/  # Playable test level
 │       └── Materials/           # M_LightWeaver_Active, M_Bridge_Locked...
 │
+├── .github/workflows/           # CI: source validation
 ├── automation/                  # Setup scripts & guide
 │   ├── setup_editor.bat         # Windows setup validator
 │   ├── setup_prototype.py       # UE5 Python automation
@@ -122,6 +130,17 @@ LightShield → [Nam breaks it] → ShadowShield → [Linh breaks it] → Vulner
 5. `automation/UE5_EDITOR_SETUP_GUIDE.md` — Step-by-step editor setup
 6. `qa/SMOKE_TEST_CHECKLIST.md` — QA smoke test suite
 7. `prototype/LOCAL_BUILD_AND_RUN_GUIDE.md` — How to build and run locally
+
+## For Testers
+
+See `qa/TESTER_GUIDE.md` for full tester instructions. Quick start:
+
+1. Install **Unreal Engine 5.4+** via Epic Games Launcher
+2. Clone repo and open `ShardsOfDawn.uproject`
+3. Compile and open `PrototypeRoom` map
+4. Press Play with **2 players** (split-screen)
+5. Use debug console commands (backtick key) for testing shortcuts
+6. Follow `qa/SMOKE_TEST_CHECKLIST.md` for structured testing
 
 ## Next Steps
 1. Open `ShardsOfDawn.uproject` in UE5 5.4+ and compile

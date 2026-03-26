@@ -45,6 +45,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SOD|Puzzle")
 	void ResetPuzzle();
 
+	/** Debug: instantly solve this puzzle */
+	void DebugSolve();
+
 	/** Get current puzzle state */
 	UFUNCTION(BlueprintPure, Category = "SOD|Puzzle")
 	ESODPuzzleState GetPuzzleState() const { return CurrentState; }

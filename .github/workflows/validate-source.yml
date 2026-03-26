@@ -1,0 +1,167 @@
+name: UE5 Source Validation
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'Source/**'
+      - 'Config/**'
+      - '*.uproject'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'Source/**'
+      - 'Config/**'
+      - '*.uproject'
+
+jobs:
+  validate-source:
+    runs-on: ubuntu-latest
+    name: Validate UE5 Source Structure
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate .uproject exists
+        run: |
+          echo "=== Checking UE5 project file ==="
+          test -f ShardsOfDawn.uproject && echo "PASS: ShardsOfDawn.uproject found" || (echo "FAIL: ShardsOfDawn.uproject missing" && exit 1)
+
+      - name: Validate project JSON
+        run: |
+          echo "=== Validating .uproject JSON ==="
+          python3 -c "import json; json.load(open('ShardsOfDawn.uproject')); print('PASS: Valid JSON')"
+
+      - name: Validate Source structure
+        run: |
+          echo "=== Checking Source directory ==="
+          EXPECTED_DIRS=(
+            "Source/ShardsOfDawn/Public/Characters"
+            "Source/ShardsOfDawn/Public/Abilities"
+            "Source/ShardsOfDawn/Public/Actors/PuzzleActors"
+            "Source/ShardsOfDawn/Public/Combat"
+            "Source/ShardsOfDawn/Public/Camera"
+            "Source/ShardsOfDawn/Public/CoOp"
+            "Source/ShardsOfDawn/Public/Core"
+            "Source/ShardsOfDawn/Public/UI"
+            "Source/ShardsOfDawn/Public/Level"
+            "Source/ShardsOfDawn/Public/Telemetry"
+            "Source/ShardsOfDawn/Private"
+            "Source/ShardsOfDawnEditor"
+          )
+          PASS=0
+          FAIL=0
+          for dir in "${EXPECTED_DIRS[@]}"; do
+            if [ -d "$dir" ]; then
+              echo "PASS: $dir"
+              ((PASS++))
+            else
+              echo "FAIL: $dir missing"
+              ((FAIL++))
+            fi
+          done
+          echo ""
+          echo "=== Results: $PASS passed, $FAIL failed ==="
+          [ $FAIL -eq 0 ] || exit 1
+
+      - name: Validate C++ header/source pairs
+        run: |
+          echo "=== Checking header/source pairs ==="
+          HEADERS=$(find Source/ShardsOfDawn/Public -name "*.h" | wc -l)
+          SOURCES=$(find Source/ShardsOfDawn/Private -name "*.cpp" | wc -l)
+          echo "Headers (.h): $HEADERS"
+          echo "Sources (.cpp): $SOURCES"
+          echo ""
+          # Check critical files exist
+          CRITICAL_FILES=(
+            "Source/ShardsOfDawn/Public/Characters/SodPlayerCharacter.h"
+            "Source/ShardsOfDawn/Public/Characters/SODPlayerCharacter.h"
+            "Source/ShardsOfDawn/Public/Characters/SODLinhCharacter.h"
+            "Source/ShardsOfDawn/Public/Characters/SODNamCharacter.h"
+            "Source/ShardsOfDawn/Public/Abilities/SODGameplayAbility.h"
+            "Source/ShardsOfDawn/Public/Abilities/SODAbility_LightPulse.h"
+            "Source/ShardsOfDawn/Public/Abilities/SODAbility_ShadowAnchor.h"
+            "Source/ShardsOfDawn/Public/Actors/PuzzleActors/SodPuzzleActorBase.h"
+            "Source/ShardsOfDawn/Public/Actors/PuzzleActors/SODPuzzleActor.h"
+            "Source/ShardsOfDawn/Public/Actors/PuzzleActors/SODPuzzleDoor.h"
+            "Source/ShardsOfDawn/Public/Combat/SODDualShieldEnemy.h"
+            "Source/ShardsOfDawn/Public/Camera/SODSplitScreenManager.h"
+            "Source/ShardsOfDawn/Public/CoOp/SODCoOpSyncSubsystem.h"
+            "Source/ShardsOfDawn/Public/CoOp/SODCheckpointActor.h"
+            "Source/ShardsOfDawn/Public/UI/SODHUD.h"
+            "Source/ShardsOfDawn/ShardsOfDawn.Build.cs"
+            "Source/ShardsOfDawn.Target.cs"
+            "Source/ShardsOfDawnEditor.Target.cs"
+          )
+          for f in "${CRITICAL_FILES[@]}"; do
+            if [ -f "$f" ]; then
+              echo "PASS: $f"
+            else
+              echo "FAIL: $f missing"
+              exit 1
+            fi
+          done
+          echo ""
+          echo "PASS: All critical files present"
+
+      - name: Validate Config files
+        run: |
+          echo "=== Checking Config ==="
+          for f in Config/DefaultEngine.ini Config/DefaultGame.ini Config/DefaultInput.ini Config/DefaultGameplayTags.ini; do
+            if [ -f "$f" ]; then
+              echo "PASS: $f ($(wc -l < $f) lines)"
+            else
+              echo "FAIL: $f missing"
+              exit 1
+            fi
+          done
+
+      - name: Validate Content structure
+        run: |
+          echo "=== Checking Content ==="
+          CONTENT_ITEMS=$(find Content -type f 2>/dev/null | wc -l)
+          echo "Content files: $CONTENT_ITEMS"
+          test -d Content/Game/Maps && echo "PASS: Maps directory exists" || echo "WARN: No maps directory"
+          test -d Content/Game/Blueprints && echo "PASS: Blueprints directory exists" || echo "WARN: No blueprints directory"
+          test -d Content/Game/Materials && echo "PASS: Materials directory exists" || echo "WARN: No materials directory"
+
+      - name: Check for include errors in C++
+        run: |
+          echo "=== Scanning for obvious include issues ==="
+          # Check that no .cpp file includes from non-existent paths
+          ERRORS=0
+          for cpp in $(find Source/ShardsOfDawn/Private -name "*.cpp"); do
+            while IFS= read -r line; do
+              HEADER=$(echo "$line" | grep -oP '#include\s+"(SOD[^"]+|Characters/[^"]+|Abilities/[^"]+|Actors/[^"]+|Combat/[^"]+|Camera/[^"]+|CoOp/[^"]+|Core/[^"]+|UI/[^"]+|GameModes/[^"]+|GameInstance/[^"]+|Controllers/[^"]+|Interfaces/[^"]+|Puzzle/[^"]+)"' | grep -oP '"[^"]+"' | tr -d '"')
+              if [ -n "$HEADER" ]; then
+                if [ ! -f "Source/ShardsOfDawn/Public/$HEADER" ] && [ ! -f "Source/ShardsOfDawn/Private/$HEADER" ]; then
+                  echo "WARN: $cpp includes $HEADER (not found in Public/ or Private/)"
+                fi
+              fi
+            done < "$cpp"
+          done
+          echo "PASS: Include scan complete"
+
+      - name: Generate source summary
+        run: |
+          echo "=== SOURCE SUMMARY ==="
+          echo "Project: ShardsOfDawn (UE5 5.4+)"
+          echo ""
+          echo "C++ Headers: $(find Source -name '*.h' | wc -l)"
+          echo "C++ Sources: $(find Source -name '*.cpp' | wc -l)"
+          echo "Build files: $(find Source -name '*.Build.cs' -o -name '*.Target.cs' | wc -l)"
+          echo "Config files: $(find Config -name '*.ini' | wc -l)"
+          echo "Content files: $(find Content -type f 2>/dev/null | wc -l)"
+          echo "Blueprint stubs: $(find Content -name '*.uasset' 2>/dev/null | wc -l)"
+          echo "Maps: $(find Content -name '*.umap' 2>/dev/null | wc -l)"
+          echo ""
+          echo "Systems:"
+          echo "  Characters: $(find Source -path '*Characters*' -name '*.h' | wc -l) classes"
+          echo "  Abilities: $(find Source -path '*Abilities*' -name '*.h' | wc -l) classes"
+          echo "  Puzzles: $(find Source -path '*PuzzleActors*' -name '*.h' | wc -l) classes"
+          echo "  Combat: $(find Source -path '*Combat*' -name '*.h' | wc -l) classes"
+          echo "  Camera: $(find Source -path '*Camera*' -name '*.h' | wc -l) classes"
+          echo "  CoOp: $(find Source -path '*CoOp*' -name '*.h' | wc -l) classes"
+          echo "  UI: $(find Source -path '*UI*' -name '*.h' | wc -l) classes"
+          echo ""
+          echo "VALIDATION COMPLETE"

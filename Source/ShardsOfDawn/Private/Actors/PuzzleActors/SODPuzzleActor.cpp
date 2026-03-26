@@ -135,6 +135,13 @@ void ASODPuzzleActor::OnShadowLocked_Implementation()
 	// Override in Blueprint: lock VFX, shadow particles, etc.
 }
 
+void ASODPuzzleActor::DebugSolve()
+{
+	GetWorldTimerManager().ClearTimer(RevealTimerHandle);
+	SetPuzzleState(ESODPuzzleState::Solved);
+	OnPuzzleSolved();
+}
+
 void ASODPuzzleActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
